@@ -8,8 +8,8 @@ from launch_ros.actions import Node
 def generate_launch_description():
     pkg_nav = get_package_share_directory('myrobot_navigation')
 
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    map_yaml = LaunchConfiguration('map', default=os.path.join(pkg_nav, 'maps', 'blank_map.yaml'))
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    map_yaml = LaunchConfiguration('map')
 
     # Paths to config files
     controller_yaml = os.path.join(pkg_nav, 'config', 'controller_server_blind.yaml')

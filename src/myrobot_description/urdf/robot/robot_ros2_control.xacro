@@ -3,11 +3,21 @@
 
     <ros2_control name="RobotSystem" type="system">
 
+         <!-- ros2_control Gazebo -->
+        <xacro:if value="$(arg is_sim)">
+            <!-- ROS 2 Jazzy -->
+            <hardware>
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </hardware>
+        </xacro:if>
+
         <!-- ros2_control Real Robot -->
-        <hardware>
-            <plugin>myrobot_firmware/MyRobotInterface</plugin>
-            <param name="port">/dev/ttyUSB0</param>
-        </hardware>
+        <xacro:unless value="$(arg is_sim)">
+            <hardware>
+                <plugin>myrobot_firmware/MyRobotInterface</plugin>
+                <param name="port">/dev/ttyUSB0</param>
+            </hardware>
+        </xacro:unless>
 
         <!-- ros2_control Common Interfaces -->
         <joint name="right_wheel_joint">
