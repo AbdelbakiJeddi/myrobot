@@ -65,7 +65,7 @@ def generate_launch_description():
     return LaunchDescription([
         gazebo,
         controller,
-        robot_localization_ekf,
+        #robot_localization_ekf,
         navigation,
         rviz,
     ])

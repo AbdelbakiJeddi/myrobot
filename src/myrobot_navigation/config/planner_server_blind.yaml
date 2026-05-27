@@ -3,7 +3,7 @@ planner_server:
     expected_planner_frequency: 1.0
     use_sim_time: false
     planner_plugins: ["GridBased"]
-    odom_topic: /odometry/filtered
+    odom_topic: /myrobot_controller/odom  #/odometry/filtered
 
     # Smac 2D parameters
     GridBased:

@@ -7,7 +7,7 @@ controller_server:
     progress_checker_plugins: ["progress_checker"]
     goal_checker_plugins: ["goal_checker"]
     controller_plugins: ["FollowPath"]
-    odom_topic: /odometry/filtered
+    odom_topic: /myrobot_controller/odom  #/odometry/filtered
     enable_stamped_cmd_vel: true
 
     progress_checker:

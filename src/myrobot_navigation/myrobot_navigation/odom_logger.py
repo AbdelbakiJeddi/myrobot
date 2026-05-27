@@ -14,7 +14,7 @@ class OdomLogger(Node):
         super().__init__('odom_logger')
         self.subscription = self.create_subscription(
             Odometry,
-            '/myrobot/odom',
+            '/odometry/filtered',
             self.odom_callback,
             10
         )
