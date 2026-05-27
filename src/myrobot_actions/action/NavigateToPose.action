@@ -1,0 +1,13 @@
+# Goal - pose to navigate to
+geometry_msgs/PoseStamped pose
+---
+# Result
+bool success
+float64 final_distance
+float64 final_angle_error
+---
+# Feedback - published during navigation
+geometry_msgs/PoseStamped current_pose
+float64 distance_remaining
+float64 angle_remaining
+float64 elapsed_time

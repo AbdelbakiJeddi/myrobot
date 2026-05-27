@@ -1,0 +1,9 @@
+<library path="myrobot_firmware">
+    <class name="myrobot_firmware/MyRobotInterface"
+      type="myrobot_firmware::MyRobotInterface"
+      base_class_type="hardware_interface::SystemInterface">
+      <description>
+        MyRobot Hardware Interface
+      </description>
+    </class>
+  </library>
