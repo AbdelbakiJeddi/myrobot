@@ -8,7 +8,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY behavior_tree config launch maps 
+  DIRECTORY launch maps config
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -18,6 +18,8 @@ ament_python_install_package(${PROJECT_NAME})
 # Install executable scripts
 install(
   PROGRAMS ${PROJECT_NAME}/odom_logger.py
+  PROGRAMS ${PROJECT_NAME}/go_to_pose_action.py
+  PROGRAMS ${PROJECT_NAME}/go_to_pose_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

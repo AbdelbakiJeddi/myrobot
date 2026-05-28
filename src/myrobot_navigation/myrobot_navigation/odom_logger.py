@@ -31,8 +31,8 @@ class OdomLogger(Node):
             2.0 * (orientation.w * orientation.z + orientation.x * orientation.y),
             1.0 - 2.0 * (orientation.y * orientation.y + orientation.z * orientation.z)
         )
-
-        self.get_logger().info(f'x={x:.3f}, y={y:.3f}, yaw={yaw:.3f}')
+        yaw_de = math.degrees(yaw)
+        self.get_logger().info(f'x={x:.3f}, y={y:.3f}, yaw={yaw_de:.1f}°')
 
 
 def main() -> None:

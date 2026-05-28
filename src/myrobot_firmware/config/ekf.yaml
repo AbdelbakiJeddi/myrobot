@@ -50,12 +50,12 @@ ekf_filter_node:
     # if unspecified, effectively making this parameter required for each sensor.
     imu0_config:
                 [false, false, false, # x, y, z
-                false, false, true, # roll, pitch, yaw
+                false, false, false, # roll, pitch, yaw
                 false, false, false, # vx, vy, vz
                 false, false, true, # vroll, vpitch, vyaw
                 false, false, false] # ax, ay, az
 
-    imu0_differential: true
+    imu0_differential: false
     imu0_pose_use_child_frame: false
 
     # The filter accepts an arbitrary number of inputs from each input message type (nav_msgs/Odometry,

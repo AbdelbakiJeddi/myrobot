@@ -148,13 +148,13 @@ hardware_interface::return_type MyRobotInterface::read(const rclcpp::Time &, con
 {
   auto dt = period.seconds();  // 0.01s
 
-  // ✅ Always integrates every 10ms using last known velocity
+  // Always integrates every 10ms using last known velocity
   for (size_t i = 0; i < velocity_states_.size(); i++)
   {
     position_states_.at(i) += velocity_states_.at(i) * dt;
   }
 
-  // ✅ Only updates velocity when Arduino sends new data (every 50ms)
+  // Only updates velocity when Arduino sends new data (every 50ms)
   if (arduino_.IsDataAvailable())
   {
     std::string message;
