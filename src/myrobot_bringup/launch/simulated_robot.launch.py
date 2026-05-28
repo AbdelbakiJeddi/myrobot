@@ -25,29 +25,6 @@ def generate_launch_description():
             "controller.launch.py"
         ),
     )
-    robot_localization_ekf = Node(
-        package="robot_localization",
-        executable="ekf_node",
-        name="ekf_filter_node",
-        output="screen",
-        parameters=[
-            os.path.join(
-                get_package_share_directory("myrobot_firmware"),
-                "config",
-                "ekf.yaml"),
-            {"use_sim_time": True}
-        ],
-    )
-    navigation = IncludeLaunchDescription(
-        os.path.join(
-            get_package_share_directory("myrobot_navigation"),
-            "launch",
-            "navigation.launch.py"
-        ),
-        launch_arguments={
-            "use_sim_time": "True"
-        }.items()
-    )
 
     rviz = Node(
         package="rviz2",
@@ -65,7 +42,5 @@ def generate_launch_description():
     return LaunchDescription([
         gazebo,
         controller,
-        #robot_localization_ekf,
-        navigation,
         rviz,
     ])
