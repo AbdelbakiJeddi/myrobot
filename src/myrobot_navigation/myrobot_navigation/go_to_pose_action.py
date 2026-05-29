@@ -55,8 +55,8 @@ class GoToPoseActionServer(Node):
         self.current_yaw_ = 0.0
 
         # Control Parameters (can be adjusted via ROS parameters)
-        self.declare_parameter('k_v', 0.5)
-        self.declare_parameter('k_w', 0.8)
+        self.declare_parameter('k_v', 0.9)
+        self.declare_parameter('k_w', 1.7)
         self.k_v_ = self.get_parameter('k_v').value
         self.k_w_ = self.get_parameter('k_w').value
 
@@ -64,8 +64,8 @@ class GoToPoseActionServer(Node):
         self.declare_parameter('dist_tolerance', 0.01)     # 1 cm
         self.declare_parameter('align_tolerance', 0.01)    # ~0.5 degrees
         self.declare_parameter('final_tolerance', 0.01)    # ~0.5 degrees
-        self.declare_parameter('v_max', 1.0)               # max linear speed (m/s)
-        self.declare_parameter('w_max', 2.5)               # max angular speed (rad/s)
+        self.declare_parameter('v_max', 2.0)               # max linear speed (m/s)
+        self.declare_parameter('w_max', 3.5)               # max angular speed (rad/s)
 
         self.dist_tolerance_ = self.get_parameter('dist_tolerance').value
         self.align_tolerance_ = self.get_parameter('align_tolerance').value
@@ -83,7 +83,7 @@ class GoToPoseActionServer(Node):
         self.current_yaw_ = math.atan2(siny_cosp, cosy_cosp)
         self.current_x_ = msg.pose.pose.position.x
         self.current_y_ = msg.pose.pose.position.y
-        self.get_logger().info(f"Odometry update - Position: ({self.current_x_:.2f}, {self.current_y_:.2f}), Yaw: {math.degrees(self.current_yaw_):.1f}°")
+        #self.get_logger().info(f"Odometry update - Position: ({self.current_x_:.2f}, {self.current_y_:.2f}), Yaw: {math.degrees(self.current_yaw_):.1f}°")
 
     def goal_callback(self, goal_request):
         self.get_logger().info('Received a new navigation goal request.')

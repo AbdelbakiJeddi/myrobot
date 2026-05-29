@@ -80,10 +80,10 @@ def generate_launch_description():
             ('/imu', '/imu/out'),
         ]
     )
-    
+
     waypoint_node = Node(
         package="myrobot_description",
-        executable="waypoint_marker_publisher",
+        executable="waypoint_marker_publisher.py",
         output="screen",
         parameters=[{"use_sim_time": True}]
     )

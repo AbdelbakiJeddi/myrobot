@@ -14,8 +14,7 @@ ament_python_install_package(${PROJECT_NAME})
 
 # Install executable scripts
 install(
-  PROGRAMS
-    ${PROJECT_NAME}/waypoint_marker_publisher.py
+  PROGRAMS ${PROJECT_NAME}/waypoint_marker_publisher.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

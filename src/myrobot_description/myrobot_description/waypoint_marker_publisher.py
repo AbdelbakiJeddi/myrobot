@@ -7,7 +7,6 @@ colored discs + floating text labels in RViz alongside Gazebo.
 
 ROS 2 (Humble/Iron)
 
-ROS 2:  ros2 run nav_test_world waypoint_marker_publisher.py
 """
 
 import math
