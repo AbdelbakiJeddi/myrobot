@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="nav_test_world">
+
+    <!-- ===== Lighting ===== -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Sun</uri>
+    </include>
+
+    <!-- ===== Ground plane ===== -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Ground Plane</uri>
+    </include>
+
+    <!-- ===== Physics ===== -->
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+    <!-- ===================================================
+         NAVIGATION WAYPOINT TAGS
+         Each tag is a flat textured disc on the ground.
+         Positions are in (X, Y) meters, Z = 0.001 (just above ground).
+         ===================================================-->
+
+    <!-- WP0 — Origin / Home (PURPLE) -->
+    <model name="waypoint_0">
+      <static>true</static>
+      <pose>0 0 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.5 0.0 0.8 1</ambient>
+            <diffuse>0.5 0.0 0.8 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- WP1 — (-3, 3) (BLUE) -->
+    <model name="waypoint_1">
+      <static>true</static>
+      <pose>-3 3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.4 0.9 1</ambient>
+            <diffuse>0.0 0.4 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- WP1 outer ring (visual helper) -->
+    <model name="waypoint_1_ring">
+      <static>true</static>
+      <pose>-3 3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- WP2 — (3, 3) (BLUE) -->
+    <model name="waypoint_2">
+      <static>true</static>
+      <pose>3 3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.4 0.9 1</ambient>
+            <diffuse>0.0 0.4 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="waypoint_2_ring">
+      <static>true</static>
+      <pose>3 3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- WP3 — (-3, -3) (BLUE) -->
+    <model name="waypoint_3">
+      <static>true</static>
+      <pose>-3 -3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.4 0.9 1</ambient>
+            <diffuse>0.0 0.4 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="waypoint_3_ring">
+      <static>true</static>
+      <pose>-3 -3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- WP4 — (3, -3) (BLUE) -->
+    <model name="waypoint_4">
+      <static>true</static>
+      <pose>3 -3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.4 0.9 1</ambient>
+            <diffuse>0.0 0.4 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="waypoint_4_ring">
+      <static>true</static>
+      <pose>3 -3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- WP5 — (0, 3) (ORANGE) -->
+    <model name="waypoint_5">
+      <static>true</static>
+      <pose>0 3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.25</radius>
+              <length>0.002</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1.0 0.5 0.0 1</ambient>
+            <diffuse>1.0 0.5 0.0 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="waypoint_5_ring">
+      <static>true</static>
+      <pose>0 3 0.001 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.35</radius>
+              <length>0.001</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ===== Boundary walls (optional — helps robot not wander off) ===== -->
+    <!-- North wall -->
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 5.1 0.5 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>10.2 0.2 1.0</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 0.5</ambient>
+            <diffuse>0.8 0.8 0.8 0.5</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box><size>10.2 0.2 1.0</size></box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- South wall -->
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -5.1 0.5 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>10.2 0.2 1.0</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 0.5</ambient>
+            <diffuse>0.8 0.8 0.8 0.5</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box><size>10.2 0.2 1.0</size></box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- East wall -->
+    <model name="wall_east">
+      <static>true</static>
+      <pose>5.1 0 0.5 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>0.2 10.2 1.0</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 0.5</ambient>
+            <diffuse>0.8 0.8 0.8 0.5</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box><size>0.2 10.2 1.0</size></box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- West wall -->
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-5.1 0 0.5 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>0.2 10.2 1.0</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 0.5</ambient>
+            <diffuse>0.8 0.8 0.8 0.5</diffuse>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <box><size>0.2 10.2 1.0</size></box>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+  </world>
+</sdf>
