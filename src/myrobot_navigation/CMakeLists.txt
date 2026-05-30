@@ -18,8 +18,8 @@ ament_python_install_package(${PROJECT_NAME})
 # Install executable scripts
 install(
   PROGRAMS ${PROJECT_NAME}/odom_logger.py
-  PROGRAMS ${PROJECT_NAME}/go_to_pose_action.py
-  PROGRAMS ${PROJECT_NAME}/go_to_pose_client.py
+  PROGRAMS ${PROJECT_NAME}/go_to_goal_server.py
+  PROGRAMS ${PROJECT_NAME}/go_to_goal_client.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

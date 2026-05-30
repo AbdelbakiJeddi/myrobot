@@ -46,7 +46,8 @@ myrobot_controller:
 
     # Publish to TF directly or not
     enable_odom_tf: false  #false if using ekf with imu
-
+    
+    open_loop: false
     # Velocity and acceleration limits
     # Whenever a min_* is unspecified, default to -max_*
     linear:

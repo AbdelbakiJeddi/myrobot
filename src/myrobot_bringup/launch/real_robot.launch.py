@@ -22,18 +22,18 @@ def generate_launch_description():
             "controller.launch.py"
         )
     )
-
-
-    rviz = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen"
+    navigation = IncludeLaunchDescription(
+        os.path.join(
+            get_package_share_directory("myrobot_navigation"),
+            "launch",
+            "go_to_goal.launch.py"
+        )
     )
+
         
     return LaunchDescription([
 
         hardware_interface,
         controller,
-        rviz
+        navigation
     ])
