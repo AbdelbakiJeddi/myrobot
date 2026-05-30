@@ -4,29 +4,29 @@
 
   <!-- Wheels -->
 <gazebo reference="left_wheel_link">
-  <mu1>0.8</mu1>
-  <mu2>0.8</mu2>
+  <mu1>200.0</mu1>
+  <mu2>100.0</mu2>
   <kp>1000000.0</kp>
-  <kd>10.0</kd>
-  <minDepth>0.001</minDepth>
-  <maxVel>1.0</maxVel>
+  <kd>100.0</kd>
+  <minDepth>0.0</minDepth>
+  <maxVel>0.1</maxVel>
   <fdir1>1 0 0</fdir1>
 </gazebo>
 
 <gazebo reference="right_wheel_link">
-  <mu1>0.8</mu1>
-  <mu2>0.8</mu2>
+  <mu1>200.0</mu1>
+  <mu2>100.0</mu2>
   <kp>1000000.0</kp>
-  <kd>10.0</kd>
-  <minDepth>0.001</minDepth>
-  <maxVel>1.0</maxVel>
+  <kd>100.0</kd>
+  <minDepth>0.0</minDepth>
+  <maxVel>0.1</maxVel>
   <fdir1>1 0 0</fdir1>
 </gazebo>
     
   <!-- Caster Wheels -->
   <gazebo reference="rear_caster_wheel_link">
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
     <kp>1000000.0</kp>
     <kd>100.0</kd>
     <minDepth>0.001</minDepth>
@@ -34,8 +34,8 @@
   </gazebo>
     
   <gazebo reference="front_caster_wheel_link">
-    <mu1>0.1</mu1>
-    <mu2>0.1</mu2>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
     <kp>1000000.0</kp>
     <kd>100.0</kd>
     <minDepth>0.001</minDepth>
@@ -50,6 +50,15 @@
       </plugin>
       <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
         <render_engine>ogre2</render_engine>
+      </plugin>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+      <!-- Ground Truth Odometry Publisher (from Gazebo physics, not from wheel encoders) -->
+      <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+        <link_name>base_footprint</link_name>
+        <odom_frame>odom</odom_frame>
+        <body_frame>base_footprint</body_frame>
+        <odom_publish_frequency>50</odom_publish_frequency>
+        <odom_topic>ground_truth/odom</odom_topic>
       </plugin>
   </gazebo>
 

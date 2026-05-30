@@ -28,7 +28,7 @@
     <!-- WP0 — Origin / Home (PURPLE) -->
     <model name="waypoint_0">
       <static>true</static>
-      <pose>0 0 0.001 0 0 0</pose>
+      <pose>0 0 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>
@@ -49,7 +49,7 @@
     <!-- WP1 — (-3, 3) (BLUE) -->
     <model name="waypoint_1">
       <static>true</static>
-      <pose>-3 3 0.001 0 0 0</pose>
+      <pose>-3 3 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>
@@ -69,7 +69,7 @@
     <!-- WP1 outer ring (visual helper) -->
     <model name="waypoint_1_ring">
       <static>true</static>
-      <pose>-3 3 0.001 0 0 0</pose>
+      <pose>-3 3 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>
@@ -89,7 +89,7 @@
     <!-- WP2 — (3, 3) (BLUE) -->
     <model name="waypoint_2">
       <static>true</static>
-      <pose>3 3 0.001 0 0 0</pose>
+      <pose>3 3 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>
@@ -108,7 +108,7 @@
 
     <model name="waypoint_2_ring">
       <static>true</static>
-      <pose>3 3 0.001 0 0 0</pose>
+      <pose>3 3 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>
@@ -128,7 +128,7 @@
     <!-- WP3 — (-3, -3) (BLUE) -->
     <model name="waypoint_3">
       <static>true</static>
-      <pose>-3 -3 0.001 0 0 0</pose>
+      <pose>-3 -3 0 0 0 0</pose>
       <link name="link">
         <visual name="visual">
           <geometry>

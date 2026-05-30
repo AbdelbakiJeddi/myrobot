@@ -30,9 +30,9 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         arguments=["-d", os.path.join(
-                get_package_share_directory("nav2_bringup"),
+                get_package_share_directory("myrobot_bringup"),
                 "rviz",
-                "nav2_default_view.rviz"
+                "simple_nav.rviz"
             )
         ],
         output="screen",

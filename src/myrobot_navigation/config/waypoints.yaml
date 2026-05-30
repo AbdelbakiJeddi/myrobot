@@ -1,7 +1,7 @@
-go_to_pose_action_client:
+go_to_goal_client:
   ros__parameters:
-    frame_id: odom
-    yaw_deg: true
-    waypoints_x: [3.0]
-    waypoints_y: [3.0]
-    waypoints_yaw: [90.0]
+    yaw_in_degrees: true
+    goal_0:
+      x: 3.0
+      y: 3.0
+      yaw: 0.0

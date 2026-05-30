@@ -1,13 +1,11 @@
-# Goal 
-geometry_msgs/PoseStamped pose
+# Goal
+geometry_msgs/PoseStamped goal_pose
 ---
 # Result
 bool success
-float64 final_distance
-float64 final_angle_error
+float64 final_position_error
+float64 final_heading_error
 ---
 # Feedback
-geometry_msgs/PoseStamped current_pose
-float64 distance_remaining
-float64 angle_remaining
-float64 elapsed_time
+string current_state
+float64 distance_to_goal

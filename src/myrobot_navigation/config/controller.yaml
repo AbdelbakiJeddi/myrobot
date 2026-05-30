@@ -1,0 +1,11 @@
+go_to_goal_server:
+  ros__parameters:
+    control_rate: 20.0
+    kv: 0.8
+    kw: 0.8
+    v_max: 0.5
+    w_max: 1.5
+    position_tolerance: 0.05
+    align_tolerance: 0.05
+    orient_tolerance: 0.05
+    realign_threshold: 0.5
