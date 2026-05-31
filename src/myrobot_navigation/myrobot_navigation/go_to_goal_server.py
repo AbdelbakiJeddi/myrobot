@@ -41,8 +41,13 @@ class GoToGoalServer(Node):
 
         # -- parameters --
         self.declare_parameter('control_rate', 20.0)
-        self.declare_parameter('kv', 0.8)
-        self.declare_parameter('kw', 1.5)
+        # Rotation states (ALIGN & ORIENT): heading correction
+        self.declare_parameter('kp_rotate', 1.5)
+        self.declare_parameter('kd_rotate', 0.1)
+        # DRIVE state: distance + heading correction
+        self.declare_parameter('kp_dist', 0.8)
+        self.declare_parameter('kp_heading', 1.5)
+        # Common parameters
         self.declare_parameter('v_max', 0.5)
         self.declare_parameter('w_max', 2.0)
         self.declare_parameter('position_tolerance', 0.05)
@@ -51,8 +56,10 @@ class GoToGoalServer(Node):
         self.declare_parameter('realign_threshold', 0.5)
 
         self._rate_hz = self.get_parameter('control_rate').value
-        self._kv = self.get_parameter('kv').value
-        self._kw = self.get_parameter('kw').value
+        self._kp_rotate = self.get_parameter('kp_rotate').value
+        self._kd_rotate = self.get_parameter('kd_rotate').value
+        self._kp_dist = self.get_parameter('kp_dist').value
+        self._kp_heading = self.get_parameter('kp_heading').value
         self._v_max = self.get_parameter('v_max').value
         self._w_max = self.get_parameter('w_max').value
         self._pos_tol = self.get_parameter('position_tolerance').value
@@ -64,6 +71,7 @@ class GoToGoalServer(Node):
         self._x = 0.0
         self._y = 0.0
         self._yaw = 0.0
+        self._yaw_rate = 0.0
 
         # -- callback group (allows odom + execute to interleave) --
         cb_group = ReentrantCallbackGroup()
@@ -101,10 +109,11 @@ class GoToGoalServer(Node):
     #  Odometry
     # ------------------------------------------------------------------ #
     def _odom_cb(self, msg: Odometry) -> None:
-        """Store latest pose — 3 assignments, nothing else."""
+        """Store latest pose and yaw rate."""
         self._x = msg.pose.pose.position.x
         self._y = msg.pose.pose.position.y
         self._yaw = self._yaw_from_quaternion(msg.pose.pose.orientation)
+        self._yaw_rate = msg.twist.twist.angular.z
 
     # ------------------------------------------------------------------ #
     #  Action goal / cancel acceptance
@@ -201,21 +210,45 @@ class GoToGoalServer(Node):
         return result
 
     # ------------------------------------------------------------------ #
-    #  FSM compute helpers (pure math, no side effects)
+    #  FSM compute helpers (proportional control)
     # ------------------------------------------------------------------ #
     def _compute_align(self, heading_err: float) -> float:
-        """Return angular velocity for ALIGN state."""
-        return self._clamp(self._kw * heading_err, self._w_max)
+        """Return angular velocity for ALIGN state with PD control and minimum velocity."""
+        # PD control: proportional + derivative damping
+        w = self._kp_rotate * heading_err - self._kd_rotate * self._yaw_rate
+        w = self._clamp(w, self._w_max)
+        
+        # Apply minimum velocity to prevent stalling
+        if abs(heading_err) > self._align_tol:
+            w = math.copysign(
+                max(abs(w), 0.15),
+                w
+            )
+        
+        return w
 
     def _compute_drive(self, distance: float, heading_err: float):
         """Return (linear_vel, angular_vel) for DRIVE state."""
-        v = min(self._kv * distance, self._v_max)
-        w = self._clamp(self._kw * heading_err, self._w_max)
+        v = self._kp_dist * distance * math.cos(heading_err)
+        v = min(max(v, 0.0), self._v_max)  # Clamp to [0, v_max]
+        w = self._kp_heading * heading_err
+        w = self._clamp(w, self._w_max)
         return v, w
 
     def _compute_orient(self, yaw_err: float) -> float:
-        """Return angular velocity for ORIENT state."""
-        return self._clamp(self._kw * yaw_err, self._w_max)
+        """Return angular velocity for ORIENT state with PD control and minimum velocity."""
+        # PD control: proportional + derivative damping
+        w = self._kp_rotate * yaw_err - self._kd_rotate * self._yaw_rate
+        w = self._clamp(w, self._w_max)
+        
+        # Apply minimum velocity to prevent stalling
+        if abs(yaw_err) > self._orient_tol:
+            w = math.copysign(
+                max(abs(w), 0.15),
+                w
+            )
+        
+        return w
 
     # ------------------------------------------------------------------ #
     #  Velocity publishing

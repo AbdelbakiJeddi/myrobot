@@ -11,8 +11,8 @@
 #define L298N_in1 7  // Right Motor A
 
 // Wheel Encoders Connection PINs
-#define right_encoder_phaseA 3  // Interrupt 
-#define right_encoder_phaseB 4  
+#define right_encoder_phaseA 3  // Interrupt
+#define right_encoder_phaseB 4
 #define left_encoder_phaseA 2   // Interrupt
 #define left_encoder_phaseB A1
 
@@ -43,6 +43,11 @@ double left_wheel_meas_vel = 0.0;     // rad/s
 // Output - Command
 double right_wheel_cmd = 0.0;             // 0-255
 double left_wheel_cmd = 0.0;              // 0-255
+// Feedforward (PWM = kS + kV * |vel|)
+double kS_r = 32.0;
+double kV_r = 4.7;
+double kS_l = 32.0;
+double kV_l = 4.5;
 // Tuning - adjusted for 100Hz update rate (was 20Hz)
 // Higher frequency = lower integral, higher derivative
 double Kp_r = 12.0;     // Reduced from 11.0 for stability at 100Hz
@@ -72,8 +77,8 @@ void setup() {
 
   rightMotor.SetMode(AUTOMATIC);
   leftMotor.SetMode(AUTOMATIC);
-  rightMotor.SetOutputLimits(0, 255);
-  leftMotor.SetOutputLimits(0, 255);
+  rightMotor.SetOutputLimits(0, 150);
+  leftMotor.SetOutputLimits(0, 150);
   Serial.begin(115200);
 
   // Init encoders
@@ -182,14 +187,31 @@ void loop() {
     rightMotor.Compute();
     leftMotor.Compute();
 
+    double right_ff = 0.0;
+    double left_ff = 0.0;
+    if(right_wheel_cmd_vel != 0.0)
+    {
+      right_ff = kS_r + kV_r * fabs(right_wheel_cmd_vel);
+    }
+    if(left_wheel_cmd_vel != 0.0)
+    {
+      left_ff = kS_l + kV_l * fabs(left_wheel_cmd_vel);
+    }
+
+    double right_cmd = right_wheel_cmd + right_ff;
+    double left_cmd = left_wheel_cmd + left_ff;
+
+    right_cmd = constrain(right_cmd, 0.0, 255.0);
+    left_cmd = constrain(left_cmd, 0.0, 255.0);
+
     // Ignore commands smaller than inertia
     if(right_wheel_cmd_vel == 0.0)
     {
-      right_wheel_cmd = 0.0;
+      right_cmd = 0.0;
     }
     if(left_wheel_cmd_vel == 0.0)
     {
-      left_wheel_cmd = 0.0;
+      left_cmd = 0.0;
     }
 
     String encoder_read = "r" + right_wheel_sign + String(right_wheel_meas_vel) + ",l" + left_wheel_sign + String(left_wheel_meas_vel) + ",";
@@ -198,8 +220,8 @@ void loop() {
     right_encoder_counter = 0;
     left_encoder_counter = 0;
 
-    analogWrite(L298N_enA, right_wheel_cmd);
-    analogWrite(L298N_enB, left_wheel_cmd);
+    analogWrite(L298N_enA, right_cmd);
+    analogWrite(L298N_enB, left_cmd);
   }
 }
 

@@ -1,10 +1,16 @@
 go_to_goal_server:
   ros__parameters:
     control_rate: 20.0
-    kv: 1.3
-    kw: 1.15
+    # Rotation (ALIGN & ORIENT states)
+    kp_rotate: 1.15
+    kd_rotate: 0.1
+    # Drive (DRIVE state)
+    kp_dist: 1.3
+    kp_heading: 1.15
+    # Velocity limits
     v_max: 0.5
     w_max: 3.0
+    # Tolerances
     position_tolerance: 0.05
     align_tolerance: 0.0174
     orient_tolerance: 0.0174
