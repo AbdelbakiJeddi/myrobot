@@ -18,6 +18,26 @@ Note: This branch is for simulation. The simulated robot is modeled after the re
 - **ROS Framework**: ROS 2 (distro matching simulation, e.g., Humble or Iron)
 - **Simulator**: Gazebo or Ignition (as specified in the launch files)
 
+## Getting Started
+
+Prerequisites:
+- ROS 2 (Humble or Iron)
+- Ubuntu 22.04/24.04
+- Gazebo Ignition (or Gazebo Classic)
+
+Build:
+```
+source /opt/ros/<distro>/setup.bash
+colcon build
+```
+
+Run a Gazebo world:
+```
+source install/setup.bash
+ros2 launch myrobot_description gazebo.launch.py
+```
+(This launches an empty world; replace or add world arguments as needed. For navigation in Gazebo, see the `navigation.launch.py` in `myrobot_navigation/launch`.)
+
 ## General Description
 
 This repository provides the core ROS 2 workspace (`simple_bot_ws`) for simulating the custom mobile robot in Gazebo/Ignition. It focuses on the simulation environment setup, including worlds, robot models, and sensor plugins, to enable testing of navigation algorithms and behaviors in a realistic virtual setting.
