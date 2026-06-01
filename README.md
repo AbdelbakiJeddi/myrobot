@@ -17,6 +17,25 @@ The physical robot is powered by:
 - **OS**: Ubuntu Server 24.04
 - **ROS Framework**: ROS 2 Jazzy
 
+## Getting Started
+
+Prerequisites:
+- ROS 2 Jazzy
+- Ubuntu 22.04/24.04 (ROS 2 Jazzy supported)
+- Raspberry Pi 5 (or compatible hardware)
+
+Build:
+```
+source /opt/ros/jazzy/setup.bash
+colcon build
+```
+
+Run:
+```
+source install/setup.bash
+ros2 launch myrobot_bringup real_robot.launch.py
+```
+
 ## General Description
 
 This repository provides the core ROS 2 workspace (`simple_bot_ws`) needed to operate the custom mobile robot. It manages hardware I/O, kinematic control, robust pose estimation, and autonomous navigation.
