@@ -17,6 +17,26 @@ Note: This branch is for simulation. The simulated robot is modeled after the re
 - **OS**: Ubuntu Server 24.04 (simulated)
 - **ROS Framework**: ROS 2 (distro matching simulation, e.g., Humble or Iron)
 
+## Getting Started
+
+Prerequisites:
+- ROS 2 (Humble or Iron, matching simulation)
+- Ubuntu 22.04/24.04
+- Gazebo Ignition (or Gazebo Classic, as per ROS 2 distro)
+
+Build:
+```
+source /opt/ros/<distro>/setup.bash
+colcon build
+```
+
+Run the simulation with navigation:
+```
+source install/setup.bash
+ros2 launch myrobot_bringup simulated_robot.launch.py
+```
+(This launch file starts Gazebo and the robot model; navigation can be triggered via the `go_to_goal` action or similar.)
+
 ## General Description
 
 This repository provides the core ROS 2 workspace (`simple_bot_ws`) for simulating the custom mobile robot. It is used to test navigation algorithms, computer vision pipelines, and behavior execution in a simulated environment before deploying to the real robot.
