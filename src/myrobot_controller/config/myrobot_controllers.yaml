@@ -17,17 +17,17 @@ joint_state_broadcaster:
 myrobot_controller:
   ros__parameters:
     use_stamped_vel: true
-    left_wheel_names  : ['left_wheel_joint']
-    right_wheel_names : ['right_wheel_joint']
+    left_wheel_names: ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
 
-    publish_rate: 50.0               # default: 50
-    pose_covariance_diagonal : [0.001, 0.001, 1.0e-3, 1.0e-3, 1.0e-3, 0.01]
+    publish_rate: 100.0 # default: 50
+    pose_covariance_diagonal: [0.001, 0.001, 1.0e-3, 1.0e-3, 1.0e-3, 0.01]
     twist_covariance_diagonal: [0.001, 0.001, 1.0e-3, 1.0e-3, 1.0e-3, 0.01]
 
-    wheel_separation : 0.33
-    wheel_radius : 0.033
+    wheel_separation: 0.33
+    wheel_radius: 0.033
 
-    wheel_separation_multiplier: 1.0
+    wheel_separation_multiplier: 1.0605
     left_wheel_radius_multiplier: 1.0
     right_wheel_radius_multiplier: 1.0
 
@@ -35,7 +35,7 @@ myrobot_controller:
     cmd_vel_timeout: 0.5
 
     # Base frame_id
-    base_frame_id: base_footprint  #default: base_link
+    base_frame_id: base_footprint #default: base_link
     # Odometry frame_id
     odom_frame_id: odom
     # Publish limited velocity
@@ -46,28 +46,27 @@ myrobot_controller:
 
     # Publish to TF directly or not
     open_loop: false
-    enable_odom_tf: true  #false if using ekf with imu
+    enable_odom_tf: true #false if using ekf with imu
 
     # Velocity and acceleration limits
     # Whenever a min_* is unspecified, default to -max_*
     linear:
       x:
-        has_velocity_limits    : true
-        max_velocity           : 0.3  # m/s
-        min_velocity           : -0.3 # m/s
+        has_velocity_limits: true
+        max_velocity: 0.3 # m/s
+        min_velocity: -0.3 # m/s
         has_acceleration_limits: true
-        max_acceleration       : 0.1  # m/s^2
-        min_acceleration       : -0.1 # m/s^2
-        has_jerk_limits        : false
-        max_jerk               : 1.0  # m/s^3
+        max_acceleration: 0.1 # m/s^2
+        min_acceleration: -0.1 # m/s^2
+        has_jerk_limits: false
+        max_jerk: 1.0 # m/s^3
     angular:
       z:
-        has_velocity_limits    : true
-        max_velocity           : 1.0  # rad/s
-        min_velocity           : -1.0  # rad/s
+        has_velocity_limits: true
+        max_velocity: 1.0 # rad/s
+        min_velocity: -1.0 # rad/s
         has_acceleration_limits: true
-        max_acceleration       : 0.5  # rad/s^2
-        min_acceleration       : -0.5   # rad/s^2
-        has_jerk_limits        : false
-        max_jerk               : 1.0  # rad/s^3
-
+        max_acceleration: 0.5 # rad/s^2
+        min_acceleration: -0.5 # rad/s^2
+        has_jerk_limits: false
+        max_jerk: 1.0 # rad/s^3

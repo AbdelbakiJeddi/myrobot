@@ -1,70 +1,76 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" ?>
 <robot name="myrobot" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Wheels -->
 <gazebo reference="left_wheel_link">
-  <mu1>200.0</mu1>
-  <mu2>100.0</mu2>
+  <mu1>2.0</mu1>
+  <mu2>2.0</mu2>
   <kp>1000000.0</kp>
-  <kd>100.0</kd>
-  <minDepth>0.0</minDepth>
-  <maxVel>0.1</maxVel>
+  <kd>1.0</kd>
+  <minDepth>0.001</minDepth>
+  <maxVel>1.0</maxVel>
   <fdir1>1 0 0</fdir1>
 </gazebo>
 
 <gazebo reference="right_wheel_link">
-  <mu1>200.0</mu1>
-  <mu2>100.0</mu2>
-  <kp>1000000.0</kp>
-  <kd>100.0</kd>
-  <minDepth>0.0</minDepth>
-  <maxVel>0.1</maxVel>
-  <fdir1>1 0 0</fdir1>
+    <mu1>2.0</mu1>
+    <mu2>2.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>1.0</maxVel>
+    <fdir1>1 0 0</fdir1>
 </gazebo>
-    
+
   <!-- Caster Wheels -->
   <gazebo reference="rear_caster_wheel_link">
-    <mu1>0.0</mu1>
-    <mu2>0.0</mu2>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
     <kp>1000000.0</kp>
-    <kd>100.0</kd>
+    <kd>1.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>1.0</maxVel>
+    <maxVel>0.1</maxVel>
   </gazebo>
-    
+
   <gazebo reference="front_caster_wheel_link">
-    <mu1>0.0</mu1>
-    <mu2>0.0</mu2>
+    <mu1>1.0</mu1>
+    <mu2>1.0</mu2>
     <kp>1000000.0</kp>
-    <kd>100.0</kd>
+    <kd>1.0</kd>
     <minDepth>0.001</minDepth>
-    <maxVel>1.0</maxVel>
+    <maxVel>0.1</maxVel>
   </gazebo>
 
   <!-- ROS 2 Control -->
   <gazebo>
     <!-- ROS 2 Jazzy -->
-      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-        <parameters>$(find myrobot_controller)/config/myrobot_controllers.yaml</parameters>
-      </plugin>
-      <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+    <plugin
+            filename="gz_ros2_control-system"
+            name="gz_ros2_control::GazeboSimROS2ControlPlugin"
+        >
+    <parameters
+            >$(find myrobot_controller)/config/myrobot_controllers.yaml</parameters>
+    </plugin>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
         <render_engine>ogre2</render_engine>
-      </plugin>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-      <!-- Ground Truth Odometry Publisher (from Gazebo physics, not from wheel encoders) -->
-      <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+    </plugin>
+
+    <!-- Ground Truth Odometry Publisher (from Gazebo physics, not from wheel encoders) -->
+    <plugin
+            filename="gz-sim-odometry-publisher-system"
+            name="gz::sim::systems::OdometryPublisher"
+        >
         <link_name>base_footprint</link_name>
         <odom_frame>odom</odom_frame>
         <body_frame>base_footprint</body_frame>
         <odom_publish_frequency>50</odom_publish_frequency>
         <odom_topic>ground_truth/odom</odom_topic>
-      </plugin>
+    </plugin>
   </gazebo>
 
 
   <!-- 2D Laser Sensor -->
-  <gazebo reference="laser_link">
+  <!-- <gazebo reference="laser_link">
     <sensor name="lidar" type="gpu_lidar">
       <always_on>true</always_on>
       <visualize>true</visualize>
@@ -91,6 +97,35 @@
           <stddev>0.01</stddev>
         </noise>
       </lidar>
+    </sensor>
+  </gazebo> -->
+
+  <!-- Camera -->
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="camera">
+      <always_on>true</always_on>
+      <update_rate>10</update_rate>
+      <visualize>true</visualize>
+      <topic>camera/image_raw</topic>
+      <camera>
+        <horizontal_fov>1.047</horizontal_fov>
+        <image>
+          <width>350</width>
+          <height>300</height>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>100</far>
+        </clip>
+        <distortion>
+          <k1>0</k1>
+          <k2>0</k2>
+          <k3>0</k3>
+          <p1>0</p1>
+          <p2>0</p2>
+          <center>0.5 0.5</center>
+        </distortion>
+      </camera>
     </sensor>
   </gazebo>
 

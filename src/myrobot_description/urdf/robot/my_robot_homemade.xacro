@@ -1,6 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:include filename="inertial_macros.xacro"/>
+  <xacro:include filename="inertial_macros.xacro" />
   <xacro:property name="base_length" value="0.20" />
   <xacro:property name="base_width" value="0.31" />
   <xacro:property name="base_height" value="0.20" />
@@ -34,9 +34,16 @@
     </collision>
 
     <inertial>
-      <origin xyz="0 0 ${base_height / 2.0}" rpy="0 0 0"/>
-      <mass value="${base_mass}"/>
-      <inertia ixx="${base_mass / 12.0 * (base_width*base_width + base_height*base_height)}" ixy="0.0" ixz="0.0" iyy="${base_mass / 12.0 * (base_length*base_length + base_height*base_height)}" iyz="0.0" izz="${base_mass / 12.0 * (base_width*base_width + base_length*base_length)}"/>
+      <origin xyz="0 0 ${base_height / 2.0}" rpy="0 0 0" />
+      <mass value="${base_mass}" />
+      <inertia
+                ixx="${base_mass / 12.0 * (base_width*base_width + base_height*base_height)}"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="${base_mass / 12.0 * (base_length*base_length + base_height*base_height)}"
+                iyz="0.0"
+                izz="${base_mass / 12.0 * (base_width*base_width + base_length*base_length)}"
+            />
     </inertial>
 
   </link>
@@ -60,9 +67,16 @@
       </collision>
 
       <inertial>
-        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
-        <mass value="${wheel_mass}"/>
-        <inertia ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_length*wheel_length)}" ixy="0.0" ixz="0.0" iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_length*wheel_length)}" iyz="0.0" izz="${wheel_mass / 2.0 * wheel_radius*wheel_radius}"/>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <mass value="${wheel_mass}" />
+        <inertia
+                    ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_length*wheel_length)}"
+                    ixy="0.0"
+                    ixz="0.0"
+                    iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_length*wheel_length)}"
+                    iyz="0.0"
+                    izz="${wheel_mass / 2.0 * wheel_radius*wheel_radius}"
+                />
       </inertial>
     </link>
   </xacro:macro>
@@ -88,9 +102,16 @@
     </collision>
 
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="${caster_wheel_mass}"/>
-      <inertia ixx="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}" ixy="0.0" ixz="0.0" iyy="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}" iyz="0.0" izz="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="${caster_wheel_mass}" />
+      <inertia
+                ixx="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"
+                iyz="0.0"
+                izz="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"
+            />
     </inertial>
   </link>
 
@@ -112,14 +133,21 @@
     </collision>
 
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="${caster_wheel_mass}"/>
-      <inertia ixx="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}" ixy="0.0" ixz="0.0" iyy="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}" iyz="0.0" izz="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="${caster_wheel_mass}" />
+      <inertia
+                ixx="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"
+                ixy="0.0"
+                ixz="0.0"
+                iyy="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"
+                iyz="0.0"
+                izz="${caster_wheel_mass * 0.4 * (caster_wheel_radius * caster_wheel_radius)}"
+            />
     </inertial>
   </link>
 
   <!-- IMU LINK -->
-  <link name= "imu_link">
+  <!-- <link name= "imu_link">
     <visual>
       <geometry>
         <box size ="0.0212 0.0164 0.0033"/>
@@ -135,10 +163,10 @@
     <xacro:inertial_box mass="0.0021" x="0.0212" y="0.0164" z="0.0033">
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:inertial_box>
-  </link>
+  </link> -->
 
   <!-- LIDAR LINK -->
-  <link name="laser_link">
+  <!-- <link name="laser_link">
     <visual>
       <geometry>
         <cylinder radius="0.035" length ="0.057"/>
@@ -153,31 +181,28 @@
     <xacro:inertial_cylinder mass="0.1" length="0.057" radius="0.035">
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:inertial_cylinder>
-  </link>
+  </link> -->
 
   <!-- CAMERA LINK -->
   <link name="camera_link">
     <visual>
       <geometry>
-        <box size="0.05 0.05 0.05"/>
+        <box size="0.05 0.05 0.05" />
       </geometry>
-      <material name="red"/>
+      <material name="red" />
     </visual>
     <collision>
       <geometry>
-        <box size="0.05 0.05 0.05"/>
+        <box size="0.05 0.05 0.05" />
       </geometry>
     </collision>
-    <xacro:inertial_box mass="0.1" x="0.05" y="0.05" z="0.05">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-    </xacro:inertial_box>
   </link>
 
   <!-- JOINTS -->
   <joint name="base_joint" type="fixed">
     <parent link="base_footprint" />
     <child link="base_link" />
-    <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+    <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0" />
   </joint>
 
   <joint name="right_wheel_joint" type="continuous">
@@ -206,24 +231,24 @@
     <origin xyz="${-base_length / 3.0} 0 ${-caster_wheel_radius}" rpy="0 0 0" />
   </joint>
 
-  <joint name="imu_joint" type ="fixed">
-    <parent link ="base_link"/>
-    <child link ="imu_link"/>
-    <origin xyz="0.05 0.05 0.0" rpy="0 0 0"/>
+  <!-- <joint name="imu_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <origin xyz="0.05 0.05 0.0" rpy="0 0 0" />
   </joint>
 
-  <joint name="laser_joint" type ="fixed">
-    <parent link ="base_link"/>
-    <child link ="laser_link"/>
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="laser_link" />
     <axis xyz="0 0 0" />
-    <origin xyz="0 0 ${base_height + 0.057 / 2.0}" rpy="0 0 0"/>
-  </joint>
+    <origin xyz="0 0 ${base_height + 0.057 / 2.0}" rpy="0 0 0" />
+  </joint> -->
 
   <joint name="camera_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="camera_link"/>
+    <parent link="base_link" />
+    <child link="camera_link" />
     <!-- Positioned near the front edge of the top plate, facing forward -->
-    <origin xyz="${base_length/2} 0 ${base_height - 0.05}" rpy="0 1.047 0"/>
+    <origin xyz="${base_length/2} 0 ${base_height - 0.05}" rpy="0 1.047 0" />
   </joint>
 
 </robot>
