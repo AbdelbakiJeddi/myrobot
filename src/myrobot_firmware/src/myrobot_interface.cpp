@@ -159,27 +159,40 @@ hardware_interface::return_type MyRobotInterface::read(const rclcpp::Time &, con
   {
     std::string message;
     arduino_.ReadLine(message);
+
+    if (message.empty()) {
+        return hardware_interface::return_type::OK;
+    }
+
     std::stringstream ss(message);
     std::string res;
+
+    //RCLCPP_INFO_STREAM(rclcpp::get_logger("MyRobotInterface"), "RX: " << message);
 
     while (std::getline(ss, res, ','))
     {
       if (res.length() < 3) continue;
 
-      int multiplier = res.at(1) == 'p' ? 1 : -1;
-      size_t joint_index = (res.at(0) == 'r') ? 0 : 1;
-
-      if (joint_index >= info_.joints.size()) continue;
+      char side = res.at(0);     // 'r' or 'l'
+      char sign = res.at(1);     // 'p' or 'n'
+      int multiplier = (sign == 'p') ? 1 : -1;
 
       try
       {
-        double velocity = multiplier * std::stod(res.substr(2, res.size()));
-        velocity_states_.at(joint_index) = velocity;  // update velocity only, position already integrated above
+        double val = std::stod(res.substr(2));
+
+        if (side == 'r') {
+            velocity_states_.at(0) = val * multiplier;
+        } else if (side == 'l') {
+            velocity_states_.at(1) = val * multiplier;
+        }
       }
       catch (const std::invalid_argument &e)
       {
-        RCLCPP_WARN_STREAM(rclcpp::get_logger("MyRobotInterface"),
-                           "Invalid data: " << res << " - skipping");
+          RCLCPP_WARN_THROTTLE(rclcpp::get_logger("MyRobotInterface"),
+                                 *get_clock(), 1000,
+                                 "Data conversion failed for '%s': %s", res.c_str(), e.what());
+          continue;
       }
     }
   }

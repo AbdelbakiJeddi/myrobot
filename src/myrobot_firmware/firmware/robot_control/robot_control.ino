@@ -22,7 +22,7 @@ unsigned int left_encoder_counter = 0;
 String right_wheel_sign = "p";  // 'p' = positive, 'n' = negative
 String left_wheel_sign = "p";  // 'p' = positive, 'n' = negative
 unsigned long last_millis = 0;
-const unsigned long interval = 50;  // 100Hz update rate (was 50ms/20Hz)
+const unsigned long interval = 20;  // 100Hz update rate (was 50ms/20Hz)
 
 // Interpret Serial Messages
 bool is_right_wheel_cmd = false;
@@ -45,16 +45,16 @@ double right_wheel_cmd = 0.0;             // 0-255
 double left_wheel_cmd = 0.0;              // 0-255
 // Feedforward (PWM = kS + kV * |vel|)
 double kS_r = 32.0;
-double kV_r = 4.7;
+double kV_r = 2;
 double kS_l = 32.0;
-double kV_l = 4.5;
+double kV_l = 2;
 // Tuning - adjusted for 100Hz update rate (was 20Hz)
 // Higher frequency = lower integral, higher derivative
-double Kp_r = 12.0;     // Reduced from 11.0 for stability at 100Hz
-double Ki_r = 9.0;     // Reduced from 9.0 (integral accumulates faster at 100Hz)
+double Kp_r = 11.0;     // Reduced from 11.0 for stability at 100Hz
+double Ki_r = 5.0;     // Reduced from 9.0 (integral accumulates faster at 100Hz)
 double Kd_r = 0.0;     // Increased from 0.1 for better damping
-double Kp_l = 12.0;     // Reduced from 11.0
-double Ki_l = 9.0;     // Reduced from 10.0
+double Kp_l = 11.0;     // Reduced from 11.0
+double Ki_l = 5.5;     // Reduced from 10.0
 double Kd_l = 0.0;     // Increased from 0.1
 // Controller
 PID rightMotor(&right_wheel_meas_vel, &right_wheel_cmd, &right_wheel_cmd_vel, Kp_r, Ki_r, Kd_r, DIRECT);
@@ -214,8 +214,15 @@ void loop() {
       left_cmd = 0.0;
     }
 
-    String encoder_read = "r" + right_wheel_sign + String(right_wheel_meas_vel) + ",l" + left_wheel_sign + String(left_wheel_meas_vel) + ",";
-    Serial.println(encoder_read);
+    // Faster than String concatenation:
+    Serial.print("r");
+    Serial.print(right_wheel_sign);
+    Serial.print(right_wheel_meas_vel);
+    Serial.print(",l");
+    Serial.print(left_wheel_sign);
+    Serial.print(left_wheel_meas_vel);
+    Serial.println(","); // This sends the \n that ReadLine waits for
+
     last_millis = current_millis;
     right_encoder_counter = 0;
     left_encoder_counter = 0;
