@@ -55,17 +55,18 @@ The real hardware stack in this branch has seen the following progress:
 - Simple navigation action server implemented.
 - Waypoint following functionality added.
 - FeedForward term added to the PID in the Arduino firmware for improved motor control.
-- Basic obstacle avoidance using sensor data.
 
 ## Known Issues
-- [ ] Test the simple navigation stack on the real robot hardware under various conditions.
-- [ ] Refine the PID tuning for different surfaces and loads.
-- [ ] Integrate with computer vision modules for dynamic obstacle detection.
+
+- [ ] Waypoints system fails to execute second and third goals.
+- [ ] Test the simple navigation stack on the real robot hardware.
+- [ ] Refine the PID tuning.
 - [ ] Define and implement game strategy and behavior execution logic.
 
 ## Contributing
 
 We welcome contributions! Please follow these steps:
+
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix (based on this branch).
 3. Make your changes and commit them with descriptive messages.
@@ -73,7 +74,3 @@ We welcome contributions! Please follow these steps:
 5. Open a pull request to the `feature/real/simple_nav` branch of this repository.
 6. Ensure your pull request passes any automated checks and is reviewed by maintainers.
 7. Once approved, maintainers will merge into this branch and later into `main` after testing.
-
-## License
-
-This project is currently unlicensed. Please contact the maintainers for permission to use or distribute the code.
