@@ -10,6 +10,8 @@ import math
 
 import rclpy
 from rclpy.action import ActionClient
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 
 from geometry_msgs.msg import PoseStamped, Quaternion
@@ -31,7 +33,9 @@ class GoToGoalClient(Node):
 
         self.get_logger().info(f'Loaded {len(self._waypoints)} waypoint(s).')
 
-        self._client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        # Use reentrant callback group for concurrent async operations
+        cb_group = ReentrantCallbackGroup()
+        self._client = ActionClient(self, NavigateToPose, 'navigate_to_pose', callback_group=cb_group)
         self._index = 0
 
     # ------------------------------------------------------------------ #
@@ -121,46 +125,65 @@ class GoToGoalClient(Node):
     #  Callbacks
     # ------------------------------------------------------------------ #
     def _goal_response_cb(self, future) -> None:
-        handle = future.result()
-        if not handle.accepted:
-            self.get_logger().error('Goal rejected.')
-            rclpy.shutdown()
-            return
+        try:
+            handle = future.result()
+            if not handle.accepted:
+                self.get_logger().error('Goal rejected.')
+                rclpy.shutdown()
+                return
 
-        self.get_logger().info('Goal accepted.')
-        result_future = handle.get_result_async()
-        result_future.add_done_callback(self._result_cb)
+            self.get_logger().info(f'Goal {self._index} accepted, waiting for result...')
+            result_future = handle.get_result_async()
+            result_future.add_done_callback(self._result_cb)
+        except Exception as e:
+            self.get_logger().error(f'Error in goal response: {e}')
+            rclpy.shutdown()
 
     def _feedback_cb(self, feedback_msg) -> None:
-        fb = feedback_msg.feedback
-        self.get_logger().info(
-            f'[{self._index + 1}/{len(self._waypoints)}] '
-            f'{fb.current_state} — dist={fb.distance_to_goal:.2f} m',
-            throttle_duration_sec=1.0,
-        )
+        try:
+            fb = feedback_msg.feedback
+            self.get_logger().info(
+                f'[{self._index + 1}/{len(self._waypoints)}] '
+                f'{fb.current_state} — dist={fb.distance_to_goal:.2f} m',
+                throttle_duration_sec=1.0,
+            )
+        except Exception as e:
+            self.get_logger().error(f'Error in feedback: {e}')
 
     def _result_cb(self, future) -> None:
-        result = future.result().result
-        prefix = f'[{self._index + 1}/{len(self._waypoints)}]'
-
-        if result.success:
+        try:
+            prefix = f'[{self._index + 1}/{len(self._waypoints)}]'
+            
+            # Get the result response
+            get_result_response = future.result()
+            result = get_result_response.result
+            
             self.get_logger().info(
-                f'{prefix} ✓ Reached — '
+                f'{prefix} Goal completed. Success={result.success}, '
                 f'pos_err={result.final_position_error:.3f} m, '
                 f'head_err={math.degrees(result.final_heading_error):.1f}°'
             )
-            self._index += 1
-            if self._index < len(self._waypoints):
-                self._send_goal(self._index)
+
+            if result.success:
+                self.get_logger().info(
+                    f'{prefix} ✓ Reached waypoint.'
+                )
+                self._index += 1
+                if self._index < len(self._waypoints):
+                    self.get_logger().info(
+                        f'Sending next waypoint: [{self._index + 1}/{len(self._waypoints)}]'
+                    )
+                    self._send_goal(self._index)
+                else:
+                    self.get_logger().info('✓ All waypoints completed!')
+                    rclpy.shutdown()
             else:
-                self.get_logger().info('All waypoints completed.')
+                self.get_logger().warning(
+                    f'{prefix} ✗ Failed to reach waypoint'
+                )
                 rclpy.shutdown()
-        else:
-            self.get_logger().warning(
-                f'{prefix} ✗ Failed — '
-                f'pos_err={result.final_position_error:.3f} m, '
-                f'head_err={math.degrees(result.final_heading_error):.1f}°'
-            )
+        except Exception as e:
+            self.get_logger().error(f'Error in result callback: {e}', exc_info=True)
             rclpy.shutdown()
 
     # ------------------------------------------------------------------ #
@@ -185,9 +208,16 @@ def main(args=None):
         rclpy.shutdown()
         return
 
-    if node.start():
-        rclpy.spin(node)
+    # Use MultiThreadedExecutor to handle concurrent callbacks
+    executor = MultiThreadedExecutor(num_threads=2)
+    executor.add_node(node)
 
+    if node.start():
+        try:
+            executor.spin()
+        except KeyboardInterrupt:
+            pass
+    
     node.destroy_node()
     if rclpy.ok():
         rclpy.shutdown()
