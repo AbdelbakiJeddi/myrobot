@@ -13,7 +13,6 @@ Action:     navigate_to_pose  (myrobot_actions/NavigateToPose)
 """
 
 import math
-import time
 from enum import Enum, auto
 
 import rclpy
@@ -55,6 +54,9 @@ class GoToGoalServer(Node):
         self.declare_parameter("align_tolerance", 0.05)
         self.declare_parameter("orient_tolerance", 0.05)
         self.declare_parameter("realign_threshold", 0.5)
+        # Thresholds for considering robot stopped
+        self.declare_parameter("lin_vel_thresh", 0.01)  # m/s
+        self.declare_parameter("ang_vel_thresh", 0.01)  # rad/s
 
         self._rate_hz = self.get_parameter("control_rate").value
         self._kp_rotate = self.get_parameter("kp_rotate").value
@@ -67,12 +69,15 @@ class GoToGoalServer(Node):
         self._align_tol = self.get_parameter("align_tolerance").value
         self._orient_tol = self.get_parameter("orient_tolerance").value
         self._realign_thr = self.get_parameter("realign_threshold").value
+        self._lin_vel_thresh = self.get_parameter("lin_vel_thresh").value
+        self._ang_vel_thresh = self.get_parameter("ang_vel_thresh").value
 
         # -- robot pose (updated by odom callback) --
         self._x = 0.0
         self._y = 0.0
         self._yaw = 0.0
         self._yaw_rate = 0.0
+        self._linear_speed = 0.0  # magnitude of linear velocity
 
         # -- callback group (allows odom + execute to interleave) --
         cb_group = ReentrantCallbackGroup()
@@ -115,6 +120,9 @@ class GoToGoalServer(Node):
         self._y = msg.pose.pose.position.y
         self._yaw = self._yaw_from_quaternion(msg.pose.pose.orientation)
         self._yaw_rate = msg.twist.twist.angular.z
+        # Calculate linear speed magnitude
+        linear = msg.twist.twist.linear
+        self._linear_speed = math.sqrt(linear.x**2 + linear.y**2 + linear.z**2)
 
     # ------------------------------------------------------------------ #
     #  Action goal / cancel acceptance
@@ -169,20 +177,26 @@ class GoToGoalServer(Node):
             if state is _State.ALIGN:
                 v = 0.0
                 w = self._compute_align(heading_err)
-                if abs(heading_err) < self._align_tol:
+                if (
+                    abs(heading_err) < self._align_tol
+                    and abs(self._yaw_rate) < self._ang_vel_thresh
+                ):
                     state = _State.DRIVE
                     self.get_logger().info("ALIGN → DRIVE")
 
             elif state is _State.DRIVE:
                 v, w = self._compute_drive(dist, heading_err)
-                if dist < self._pos_tol:
+                if dist < self._pos_tol and self._linear_speed < self._lin_vel_thresh:
                     state = _State.ORIENT
                     self.get_logger().info("DRIVE → ORIENT")
 
             elif state is _State.ORIENT:
                 v = 0.0
                 w = self._compute_orient(final_yaw_err)
-                if abs(final_yaw_err) < self._orient_tol:
+                if (
+                    abs(final_yaw_err) < self._orient_tol
+                    and abs(self._yaw_rate) < self._ang_vel_thresh
+                ):
                     break  # success
 
             # --- publish ---
