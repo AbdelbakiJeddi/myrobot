@@ -1,19 +1,8 @@
 go_to_goal_client:
   ros__parameters:
     yaw_in_degrees: true
+    goal_hold_time: 0.0
     goal_0:
       x: 0.0
       y: 0.0
-      yaw: 0
-    goal_1:
-      x: 1.0
-      y: 0.0
-      yaw: 90
-    goal_2:
-      x: 1.0
-      y: 1.0
-      yaw: 0.0
-    goal_3:
-      x: 0.0
-      y: 1.0
-      yaw: -90
+      yaw: 135

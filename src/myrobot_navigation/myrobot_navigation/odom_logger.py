@@ -6,6 +6,7 @@ import math
 import rclpy
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 
 
 class OdomLogger(Node):
@@ -13,11 +14,11 @@ class OdomLogger(Node):
 
     def __init__(self):
         super().__init__("odom_logger")
-        self.declare_parameter('odom_topic', '/myrobot_controller/odom')
-        odom_topic = self.get_parameter('odom_topic').get_parameter_value().string_value
+        self.declare_parameter("odom_topic", "/myrobot_controller/odom")
+        odom_topic = self.get_parameter("odom_topic").get_parameter_value().string_value
         self.get_logger().info(f"Subscribing to odom topic: {odom_topic}")
         self.subscription = self.create_subscription(
-            Odometry, odom_topic, self.odom_callback, 10
+            Odometry, odom_topic, self.odom_callback, qos_profile_sensor_data
         )
         self.subscription
 

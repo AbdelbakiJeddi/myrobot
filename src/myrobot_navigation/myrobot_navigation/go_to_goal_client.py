@@ -7,6 +7,7 @@ them sequentially to the GoToGoal action server.
 """
 
 import math
+import time
 
 import rclpy
 from rclpy.action import ActionClient
@@ -26,6 +27,9 @@ class GoToGoalClient(Node):
 
         self.declare_parameter('yaw_in_degrees', True)
         self._yaw_deg = self.get_parameter('yaw_in_degrees').value
+
+        self.declare_parameter('goal_hold_time', 0.0)
+        self._goal_hold_time = self.get_parameter('goal_hold_time').value
 
         self._waypoints = self._load_waypoints()
         if not self._waypoints:
@@ -168,6 +172,11 @@ class GoToGoalClient(Node):
                 self.get_logger().info(
                     f'{prefix} ✓ Reached waypoint.'
                 )
+                if self._goal_hold_time > 0.0:
+                    self.get_logger().info(
+                        f'Holding goal for {self._goal_hold_time} seconds...'
+                    )
+                    time.sleep(self._goal_hold_time)
                 self._index += 1
                 if self._index < len(self._waypoints):
                     self.get_logger().info(

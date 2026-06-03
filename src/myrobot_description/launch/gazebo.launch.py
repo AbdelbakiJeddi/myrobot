@@ -69,10 +69,12 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"])
+            "gz_args": PythonExpression(["'", world_path, " -v 4 -r -s'"])
         }.items(),
     )
-
+    # -v: verbosity level from 0 to 4 (0-Silent, 1-Critical Errors only, 2-Warnings, 3-Info, 4-Debug)
+    # -r: start gazebo and simulation clock
+    # -s: server only no GUI
     gz_spawn_entity = Node(
         package="ros_gz_sim",
         executable="create",
