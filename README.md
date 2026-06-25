@@ -1,81 +1,40 @@
-# Gazebo Simulation Development
+# Gazebo Simulation
 
-Welcome to the `feature/gazebo-simulation` branch of the `simple_bot` repository. This branch contains the simulation worlds, models, and launch files for testing the robot in Gazebo/Ignition. It is used to validate algorithms and behaviors before deploying to real hardware.
+> **Active branch:** `feature/gazebo-simulation`
 
-## Repository Organization
+Gazebo simulation environment for the custom mobile robot — worlds, robot model, sensor plugins, and launch files used to validate navigation and behavior before deploying to the real hardware.
 
-- **`main` branch**: Contains the stable, tested code for deployment on the physical hardware.
-- **`feature/real/simple_nav` branch**: Development branch for implementing and testing simple navigation on real robot hardware.
-- **`feature/sim/simple_nav` branch**: Development branch for implementing and testing simple navigation in simulation.
-- **`feature/gazebo-simulation` branch (Current)**: Development branch for setting up and testing Gazebo/Ignition simulation environments.
-- **`old_feat/real/nav2` branch**: (Deprecated) Kept for historical reference.
+## Branches
+- **`main`** — Stable integration branch.
+- **`feature/real/nav2`** — Real-robot Nav2 implementation.
+- **`feature/sim/simple_nav`** — Simple-navigation work in simulation.
+- **`feature/real/simple_nav`** — Simple navigation on the real robot.
 
-## Hardware Setup
+## What's on this branch
 
-Note: This branch is for simulation. The simulated robot is modeled after the real robot hardware:
-- **Compute**: Raspberry Pi 5 (8GB RAM) (simulated)
-- **OS**: Ubuntu Server 24.04 (simulated)
-- **ROS Framework**: ROS 2 (distro matching simulation, e.g., Humble or Iron)
-- **Simulator**: Gazebo or Ignition (as specified in the launch files)
+- `myrobot_description/` — URDF/xacro, robot state publisher, Gazebo launch and worlds (`empty.world`, `nav_test.world`).
+- `myrobot_bringup/` — Launch files for simulated hardware interfaces (`simulated_robot.launch.py`).
+- `myrobot_controller/` — ROS 2 controllers.
+- `myrobot_firmware/` — Simulated low-level hardware interface (encoder-based).
+- `myrobot_navigation/` — Simple navigation action and config; behavior trees.
+- `myrobot_actions/` — Custom ROS 2 actions, services, and messages.
 
-## Getting Started
-
-Prerequisites:
-- ROS 2 (Humble or Iron)
-- Ubuntu 22.04/24.04
-- Gazebo Ignition (or Gazebo Classic)
+## Run
 
 Build:
-```
-source /opt/ros/<distro>/setup.bash
-colcon build
-```
-
-Run a Gazebo world:
-```
+```bash
+cd ~/simple_bot_ws
+colcon build --symlink-install
 source install/setup.bash
-ros2 launch myrobot_description gazebo.launch.py
 ```
-(This launches an empty world; replace or add world arguments as needed. For navigation in Gazebo, see the `navigation.launch.py` in `myrobot_navigation/launch`.)
 
-## General Description
+Launch Gazebo:
+```bash
+ros2 launch myrobot_description gazebo.launch.py            # empty world
+ros2 launch myrobot_navigation navigation.launch.py        # world with waypoints
+```
 
-This repository provides the core ROS 2 workspace (`simple_bot_ws`) for simulating the custom mobile robot in Gazebo/Ignition. It focuses on the simulation environment setup, including worlds, robot models, and sensor plugins, to enable testing of navigation algorithms and behaviors in a realistic virtual setting.
-
-## Package Structure
-
-- **`myrobot_description/`**: Contains the URDF, xacro files, and robot state publisher launch setups. Includes Gazebo-specific launch files (`gazebo.launch.py`) and Gazebo-specific URDF/xacro (`myrobot_gazebo.xacro`).
-- **`myrobot_bringup/`**: Launch files for executing the robot's core components in simulation and bringing up the hardware interfaces.
-- **`myrobot_controller/`**: High-level ROS 2 controllers, multiplexers, and logic files.
-- **`myrobot_firmware/`**: Low-level hardware interface layers and micro-controller connection logic (simulated).
-- **`myrobot_navigation/`**: Simple Navigation action (may be used in simulation).
-- **`myrobot_actions/`**: Custom ROS 2 action, service, and message definitions used across the ecosystem.
-
-## Recent Advancements
-
-The Gazebo simulation setup in this branch has seen the following progress:
-- Integration of Gazebo launch files and world files.
-- Accurate robot model with Gazebo-specific plugins (e.g., for sensors, motor control).
-- Creation of reusable simulation worlds for testing navigation and behaviors.
-
-## Known Issues
-- [ ] Verify the exact launch file and world file names for simulation.
-- [ ] Test the simulation under various conditions to ensure fidelity.
-- [ ] Refine the robot model for better physical interaction simulation.
-- [ ] Integrate with computer vision modules for dynamic obstacle detection in Gazebo.
-- [ ] Define and implement game strategy and behavior execution logic in Gazebo simulation.
-
-## Contributing
-
-We welcome contributions! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix (based on this branch).
-3. Make your changes and commit them with descriptive messages.
-4. Push your changes to your fork.
-5. Open a pull request to the `feature/gazebo-simulation` branch of this repository.
-6. Ensure your pull request passes any automated checks and is reviewed by maintainers.
-7. Once approved, maintainers will merge into this branch and later into `main` after testing.
-
-## License
-
-This project is currently unlicensed. Please contact the maintainers for permission to use or distribute the code.
+Visualize:
+```bash
+ros2 run rviz2 rviz2
+```
