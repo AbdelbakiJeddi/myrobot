@@ -46,9 +46,7 @@ class GoToGoalClient(Node):
         )
         self._index = 0
 
-    # ------------------------------------------------------------------ #
-    #  Waypoint loading
-    # ------------------------------------------------------------------ #
+
     def _load_waypoints(self) -> list:
         """
         Iterate goal_0, goal_1, … until an index is missing.
@@ -91,9 +89,7 @@ class GoToGoalClient(Node):
 
         return waypoints
 
-    # ------------------------------------------------------------------ #
-    #  Execution
-    # ------------------------------------------------------------------ #
+
     def start(self) -> bool:
         """Wait for server and send the first goal."""
         self.get_logger().info("Waiting for action server...")
@@ -129,9 +125,7 @@ class GoToGoalClient(Node):
         )
         future.add_done_callback(self._goal_response_cb)
 
-    # ------------------------------------------------------------------ #
-    #  Callbacks
-    # ------------------------------------------------------------------ #
+
     def _goal_response_cb(self, future) -> None:
         try:
             handle = future.result()
@@ -197,9 +191,7 @@ class GoToGoalClient(Node):
             self.get_logger().error(f"Error in result callback: {e}", exc_info=True)
             rclpy.shutdown()
 
-    # ------------------------------------------------------------------ #
-    #  Helpers
-    # ------------------------------------------------------------------ #
+
     @staticmethod
     def _yaw_to_quaternion(yaw: float) -> Quaternion:
         q = Quaternion()

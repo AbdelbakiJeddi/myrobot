@@ -7,13 +7,14 @@ States:
   DRIVE  → drive forward toward goal, correcting heading
   ORIENT → rotate in place to match the final desired heading
 
-Subscribes: /myrobot_controller/odom  (nav_msgs/Odometry)
+Subscribes: /odometry/filtered  (nav_msgs/Odometry)
 Publishes:  /myrobot_controller/cmd_vel  (geometry_msgs/TwistStamped)
 Action:     navigate_to_pose  (myrobot_actions/NavigateToPose)
 """
 
 import math
 from enum import Enum, auto
+import time
 
 import rclpy
 from geometry_msgs.msg import Quaternion, TwistStamped
@@ -72,17 +73,17 @@ class GoToGoalServer(Node):
         self._lin_vel_thresh = self.get_parameter("lin_vel_thresh").value
         self._ang_vel_thresh = self.get_parameter("ang_vel_thresh").value
 
-        # -- robot pose (updated by odom callback) --
+
         self._x = 0.0
         self._y = 0.0
         self._yaw = 0.0
         self._yaw_rate = 0.0
-        self._linear_speed = 0.0  # magnitude of linear velocity
+        self._linear_speed = 0.0  
 
-        # -- callback group (allows odom + execute to interleave) --
+
         cb_group = ReentrantCallbackGroup()
 
-        # -- subscriber --
+
         self._odom_sub = self.create_subscription(
             Odometry,
             "/odometry/filtered",
@@ -91,14 +92,13 @@ class GoToGoalServer(Node):
             callback_group=cb_group,
         )
 
-        # -- publisher --
+
         self._cmd_pub = self.create_publisher(
             TwistStamped,
             "/myrobot_controller/cmd_vel",
             10,
         )
 
-        # -- action server --
         self._action_server = ActionServer(
             self,
             NavigateToPose,
@@ -111,22 +111,17 @@ class GoToGoalServer(Node):
 
         self.get_logger().info("GoToGoal action server ready.")
 
-    # ------------------------------------------------------------------ #
-    #  Odometry
-    # ------------------------------------------------------------------ #
+
     def _odom_cb(self, msg: Odometry) -> None:
         """Store latest pose and yaw rate."""
         self._x = msg.pose.pose.position.x
         self._y = msg.pose.pose.position.y
         self._yaw = self._yaw_from_quaternion(msg.pose.pose.orientation)
         self._yaw_rate = msg.twist.twist.angular.z
-        # Calculate linear speed magnitude
+        # Calculate linear speed magnitudee
         linear = msg.twist.twist.linear
         self._linear_speed = math.sqrt(linear.x**2 + linear.y**2 + linear.z**2)
-
-    # ------------------------------------------------------------------ #
-    #  Action goal / cancel acceptance
-    # ------------------------------------------------------------------ #
+    
     def _handle_goal(self, goal_request) -> GoalResponse:
         self.get_logger().info(
             f"Goal received: x={goal_request.goal_pose.pose.position.x:.2f}, "
@@ -138,9 +133,6 @@ class GoToGoalServer(Node):
         self.get_logger().info("Cancel requested.")
         return CancelResponse.ACCEPT
 
-    # ------------------------------------------------------------------ #
-    #  Main execute loop (synchronous - runs in its own executor thread)
-    # ------------------------------------------------------------------ #
     def _execute(self, goal_handle):
         self.get_logger().info("Executing goal...")
 
@@ -155,7 +147,6 @@ class GoToGoalServer(Node):
         result = NavigateToPose.Result()
 
         while rclpy.ok():
-            # --- cancellation ---
             if goal_handle.is_cancel_requested:
                 self._stop()
                 goal_handle.canceled()
@@ -163,7 +154,7 @@ class GoToGoalServer(Node):
                 result.success = False
                 result.final_position_error = self._distance(tx, ty)
                 result.final_heading_error = abs(self._normalize(t_yaw - self._yaw))
-                return result
+                return resul
 
             # --- errors ---
             dx = tx - self._x
@@ -197,20 +188,15 @@ class GoToGoalServer(Node):
                     abs(final_yaw_err) < self._orient_tol
                     and abs(self._yaw_rate) < self._ang_vel_thresh
                 ):
-                    break  # success
+                    break  
 
-            # --- publish ---
             self._publish_cmd(v, w)
 
-            # --- feedback ---
             feedback.current_state = state.name
             feedback.distance_to_goal = dist
             goal_handle.publish_feedback(feedback)
-
-            # --- yield CPU ---
             time.sleep(dt)
 
-        # --- success ---
         self._stop()
         goal_handle.succeed()
 
@@ -224,9 +210,7 @@ class GoToGoalServer(Node):
         )
         return result
 
-    # ------------------------------------------------------------------ #
-    #  FSM compute helpers (proportional control)
-    # ------------------------------------------------------------------ #
+
     def _compute_align(self, heading_err: float) -> float:
         """Return angular velocity for ALIGN state with PD control and minimum velocity."""
         # PD control: proportional + derivative damping
@@ -259,9 +243,7 @@ class GoToGoalServer(Node):
 
         return w
 
-    # ------------------------------------------------------------------ #
-    #  Velocity publishing
-    # ------------------------------------------------------------------ #
+
     def _publish_cmd(self, v: float, w: float) -> None:
         msg = TwistStamped()
         msg.header.stamp = self.get_clock().now().to_msg()
@@ -273,9 +255,6 @@ class GoToGoalServer(Node):
     def _stop(self) -> None:
         self._publish_cmd(0.0, 0.0)
 
-    # ------------------------------------------------------------------ #
-    #  Utilities
-    # ------------------------------------------------------------------ #
     @staticmethod
     def _normalize(angle: float) -> float:
         """Wrap angle to [-π, π]."""
