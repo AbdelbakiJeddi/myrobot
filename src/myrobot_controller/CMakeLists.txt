@@ -24,6 +24,7 @@ install(
 install(PROGRAMS
   ${PROJECT_NAME}/twist_relay.py
   ${PROJECT_NAME}/navigation.py
+  ${PROJECT_NAME}/wheel_odometry.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
