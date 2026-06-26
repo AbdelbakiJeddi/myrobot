@@ -37,7 +37,7 @@ ONE_G_LSB   = 16384
 
 DLPF_CFG = 3
 
-CALIBRATION_SAMPLES = 500
+CALIBRATION_SAMPLES = 300
 CALIBRATION_DELAY   = 0.005
 
 
@@ -83,8 +83,8 @@ class MPU6050_Driver(Node):
         self.imu_msg_.linear_acceleration_covariance[4] = 1e-3  # yy
         self.imu_msg_.linear_acceleration_covariance[8] = 1e-3  # zz
 
-        self.frequency_ = 0.02  # 50 Hz
-        self.timer_ = self.create_timer(self.frequency_, self.timer_callback)
+        self.period_ = 0.01  # 100 Hz
+        self.timer_ = self.create_timer(self.period_, self.timer_callback)
 
     def init_mpu6050(self):
         try:
@@ -128,10 +128,6 @@ class MPU6050_Driver(Node):
         except OSError as e:
             self.is_connected_ = False
             self.get_logger().error(f"MPU-6050 init failed: {e}")
-            
-            # 3. Rate-limiting: Prevent the 100Hz timer loop from slamming 
-            # your system logs with errors if the hardware is unplugged.
-            time.sleep(1.0)
 
     def calibrate(self):
         self.calibrate_accel()
