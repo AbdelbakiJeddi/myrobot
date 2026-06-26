@@ -158,7 +158,7 @@ hardware_interface::return_type MyRobotInterface::read(const rclcpp::Time &, con
   if (arduino_.IsDataAvailable())
   {
     std::string message;
-    arduino_.ReadLine(message);
+    arduino_.ReadLine(message, '\n', 2);
 
     if (message.empty()) {
         return hardware_interface::return_type::OK;

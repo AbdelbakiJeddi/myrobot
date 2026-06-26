@@ -55,7 +55,9 @@ class MPU6050_Driver(Node):
 
         self.is_connected_ = False
         self.bus_ = None
-        self.init_mpu6050()
+        self.read_error_count_ = 0
+        self.MAX_READ_ERRORS = 5
+        self.init_mpu6050(calibrate=True)
 
         self.imu_pub_ = self.create_publisher(
             Imu, "/imu/out", qos_profile=qos_profile_sensor_data
@@ -86,7 +88,7 @@ class MPU6050_Driver(Node):
         self.period_ = 0.01  # 100 Hz
         self.timer_ = self.create_timer(self.period_, self.timer_callback)
 
-    def init_mpu6050(self):
+    def init_mpu6050(self, calibrate=False):
         try:
             # 1. Prevent resource leaking: Close the old bus handle if it exists
             if self.bus_ is not None:
@@ -120,10 +122,13 @@ class MPU6050_Driver(Node):
 
             # Mark as connected BEFORE calibration so read_raw_burst() works
             self.is_connected_ = True
-            self.get_logger().info("MPU-6050 initialised — running calibration…")
 
-            self.calibrate()
-            self.get_logger().info("MPU-6050 calibration complete and ready.")
+            if calibrate:
+                self.get_logger().info("MPU-6050 initialised — running calibration…")
+                self.calibrate()
+                self.get_logger().info("MPU-6050 calibration complete and ready.")
+            else:
+                self.get_logger().info("MPU-6050 reconnected — registers restored, offsets preserved.")
             
         except OSError as e:
             self.is_connected_ = False
@@ -183,13 +188,19 @@ class MPU6050_Driver(Node):
     def timer_callback(self):
         try:
             if not self.is_connected_:
-                self.init_mpu6050()
+                self.init_mpu6050(calibrate=False)
                 return
 
             raw = self.read_raw_burst()
             if raw is None:
-                self.is_connected_ = False
+                self.read_error_count_ += 1
+                if self.read_error_count_ >= self.MAX_READ_ERRORS:
+                    self.get_logger().warn("Too many I2C read failures — reconnecting…")
+                    self.is_connected_ = False
+                    self.read_error_count_ = 0
                 return
+
+            self.read_error_count_ = 0
 
             ax = raw[0] - self.acc_off_x
             ay = raw[1] - self.acc_off_y

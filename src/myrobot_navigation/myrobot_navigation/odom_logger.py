@@ -14,8 +14,9 @@ class OdomLogger(Node):
 
     def __init__(self):
         super().__init__("odom_logger")
+        self.declare_parameter("odom_topic", "/odometry/filtered")  
         self.subscription = self.create_subscription(
-            Odometry, "/odometry/filtered", self.odom_callback, qos_profile_sensor_data
+            Odometry, self.get_parameter("odom_topic").value, self.odom_callback, qos_profile_sensor_data
         )
         self.subscription
 
