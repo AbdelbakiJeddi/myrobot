@@ -160,7 +160,14 @@ hardware_interface::return_type MyRobotInterface::read(const rclcpp::Time &, con
   if (arduino_.IsDataAvailable())
   {
     std::string message;
-    arduino_.ReadLine(message, '\n', 2);
+    try{
+      arduino_.ReadLine(message, '\n', 2);
+    }
+    catch (const LibSerial::ReadTimeout &)
+    {
+        // Partial line in buffer, nothing to parse yet — try next cycle
+        return hardware_interface::return_type::OK;
+    }
 
     if (message.empty()) {
         return hardware_interface::return_type::OK;

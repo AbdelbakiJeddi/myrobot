@@ -64,7 +64,7 @@ def generate_launch_description():
 
 
     joint_state_broadcaster_spawner = TimerAction(
-        period=3.0,
+        period=2.0,
         actions=[
             Node(
                 package="controller_manager",
@@ -72,6 +72,7 @@ def generate_launch_description():
                 arguments=[
                     "joint_state_broadcaster",
                     "--controller-manager", "/controller_manager",
+                    "--controller-manager-timeout", "30",
                 ],
                 output="screen",
             ),
@@ -79,7 +80,7 @@ def generate_launch_description():
     )
 
     wheel_controller_spawner = TimerAction(
-        period=5.0,
+        period=4.0,
         actions=[
             Node(
                 package="controller_manager",
@@ -87,6 +88,7 @@ def generate_launch_description():
                 arguments=[
                     "myrobot_controller",
                     "--controller-manager", "/controller_manager",
+                    "--controller-manager-timeout", "30",
                 ],
                 output="screen",
             ),
@@ -94,7 +96,7 @@ def generate_launch_description():
     )
 
     mpu6050_node = TimerAction(
-        period=7.0,
+        period=2.0,
         actions=[
             Node(
                 package="myrobot_firmware",
@@ -106,7 +108,7 @@ def generate_launch_description():
     )
 
     robot_localization_ekf = TimerAction(
-        period=9.0,
+        period=8.0,
         actions=[
             Node(
                 package="robot_localization",
@@ -119,7 +121,7 @@ def generate_launch_description():
     )
 
     navigation = TimerAction(
-        period=12.0,
+        period=10.0,
         actions=[
             IncludeLaunchDescription(
                 os.path.join(navigation_pkg, "launch", "go_to_goal.launch.py"),

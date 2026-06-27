@@ -43,12 +43,12 @@ double right_wheel_cmd = 0.0;         // 0-255
 double left_wheel_cmd = 0.0;          // 0-255
 
 // Feedforward
-double kS_r = 32.0; double kV_r = 2;
-double kS_l = 32.0; double kV_l = 2;
+double kS_r = 35.0; double kV_r = 2.5;
+double kS_l = 35.0; double kV_l = 2.5;
 
 // Tuning parameters
-double Kp_r = 11.0; double Ki_r = 5.0; double Kd_r = 0.0;
-double Kp_l = 11.0; double Ki_l = 5.5; double Kd_l = 0.0;
+double Kp_r = 11.0; double Ki_r = 9.0; double Kd_r = 0.0;
+double Kp_l = 11.0; double Ki_l = 9.0; double Kd_l = 0.0;
 
 PID rightMotor(&right_wheel_meas_vel, &right_wheel_cmd, &right_wheel_cmd_vel, Kp_r, Ki_r, Kd_r, DIRECT);
 PID leftMotor(&left_wheel_meas_vel, &left_wheel_cmd, &left_wheel_cmd_vel, Kp_l, Ki_l, Kd_l, DIRECT);

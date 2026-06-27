@@ -1,7 +1,7 @@
 ekf_filter_node:
   ros__parameters:
     use_sim_time: false
-    frequency: 100.0
+    frequency: 50.0
     two_d_mode: true
     publish_tf: true
 
@@ -18,11 +18,11 @@ ekf_filter_node:
        false, false, true,    # vroll, vpitch, vyaw ← gyro.z only
        false, false, false]   # ax, ay, az
     imu0_differential: false
-    imu0_remove_gravitational_acceleration: true
+    imu0_remove_gravitational_acceleration: false
 
     odom0: /myrobot_controller/odom
     odom0_config:
-      [true,  true,  false,   # x, y, z
+      [false,  false,  false,   # x, y, z
        false, false, true,    # roll, pitch, yaw
        true,  true,  false,   # vx, vy, vz
        false, false, false,   # vroll, vpitch, vyaw ← let IMU own this
