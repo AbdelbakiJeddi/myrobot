@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -44,14 +44,22 @@ def generate_launch_description():
         ],
     )
 
-    client_node = Node(
-        package='myrobot_navigation',
-        executable='go_to_goal_client.py',
-        name='go_to_goal_client',
-        output='screen',
-        parameters=[
-            {'use_sim_time': use_sim_time},
-            waypoints_file,
+    # Give the action server 2 s to start before the client tries to connect.
+    # The client has its own wait_for_server(timeout_sec=10), but launching
+    # it too early can cause it to miss the server registration entirely.
+    client_node = TimerAction(
+        period=2.0,
+        actions=[
+            Node(
+                package='myrobot_navigation',
+                executable='go_to_goal_client.py',
+                name='go_to_goal_client',
+                output='screen',
+                parameters=[
+                    {'use_sim_time': use_sim_time},
+                    waypoints_file,
+                ],
+            ),
         ],
     )
 
