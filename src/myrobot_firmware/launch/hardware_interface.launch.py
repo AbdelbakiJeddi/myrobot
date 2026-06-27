@@ -64,11 +64,31 @@ def generate_launch_description():
         ],
     )
 
+    madgwick = Node(
+            package='imu_filter_madgwick',
+            executable='imu_filter_madgwick_node',
+            name='imu_filter_madgwick',
+            output='screen',
+            parameters=[{
+                'use_mag': False,       # Set to True if your IMU has a magnetometer and you want absolute North
+                'world_frame': 'enu',   # 'enu' (East-North-Up) is standard for robot_localization
+                'publish_tf': False,    # Usually False; your EKF or robot_state_publisher handles TFs
+                'gain': 0.1,            # Filter gain. Higher = trusts gyro more; Lower = trusts accel/mag more
+                'zeta': 0.0,            # Gyro drift correction factor
+            }],
+            remappings=[
+                # Remap to match your incoming raw hardware data and outgoing filtered data
+                ('imu/data_raw', '/imu/out')
+            ]
+        )
+    
+
     return LaunchDescription(
         [
             robot_state_publisher_node,
             controller_manager,
             mpu6050_node,
             robot_localization_ekf,
+            madgwick
         ]
     )
