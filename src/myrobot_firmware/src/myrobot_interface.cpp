@@ -108,6 +108,8 @@ CallbackReturn MyRobotInterface::on_activate(const rclcpp_lifecycle::State &)
   {
     arduino_.Open(port_);
     arduino_.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
+    std::this_thread::sleep_for(std::chrono::seconds(2));  // Wait for Arduino to reset
+
   }
   catch (...)
   {

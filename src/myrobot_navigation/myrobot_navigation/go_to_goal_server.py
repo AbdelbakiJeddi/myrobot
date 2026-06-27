@@ -13,8 +13,8 @@ Action:     navigate_to_pose  (myrobot_actions/NavigateToPose)
 """
 
 import math
+import threading
 from enum import Enum, auto
-import time
 
 import rclpy
 from geometry_msgs.msg import Quaternion, TwistStamped
@@ -55,6 +55,7 @@ class GoToGoalServer(Node):
         self.declare_parameter("align_tolerance", 0.05)
         self.declare_parameter("orient_tolerance", 0.05)
         self.declare_parameter("realign_threshold", 0.5)
+        self.declare_parameter("odom_timeout", 0.5)  # seconds
         # Thresholds for considering robot stopped
         self.declare_parameter("lin_vel_thresh", 0.01)  # m/s
         self.declare_parameter("ang_vel_thresh", 0.01)  # rad/s
@@ -70,15 +71,18 @@ class GoToGoalServer(Node):
         self._align_tol = self.get_parameter("align_tolerance").value
         self._orient_tol = self.get_parameter("orient_tolerance").value
         self._realign_thr = self.get_parameter("realign_threshold").value
+        self._odom_timeout = self.get_parameter("odom_timeout").value
         self._lin_vel_thresh = self.get_parameter("lin_vel_thresh").value
         self._ang_vel_thresh = self.get_parameter("ang_vel_thresh").value
 
 
+        self._odom_lock = threading.Lock()
         self._x = 0.0
         self._y = 0.0
         self._yaw = 0.0
         self._yaw_rate = 0.0
-        self._linear_speed = 0.0  
+        self._linear_speed = 0.0
+        self._last_odom_time = self.get_clock().now()
 
 
         cb_group = ReentrantCallbackGroup()
@@ -113,14 +117,16 @@ class GoToGoalServer(Node):
 
 
     def _odom_cb(self, msg: Odometry) -> None:
-        """Store latest pose and yaw rate."""
-        self._x = msg.pose.pose.position.x
-        self._y = msg.pose.pose.position.y
-        self._yaw = self._yaw_from_quaternion(msg.pose.pose.orientation)
-        self._yaw_rate = msg.twist.twist.angular.z
-        # Calculate linear speed magnitudee
-        linear = msg.twist.twist.linear
-        self._linear_speed = math.sqrt(linear.x**2 + linear.y**2 + linear.z**2)
+        """Store latest pose and yaw rate (thread-safe)."""
+        with self._odom_lock:
+            self._x = msg.pose.pose.position.x
+            self._y = msg.pose.pose.position.y
+            self._yaw = self._yaw_from_quaternion(msg.pose.pose.orientation)
+            self._yaw_rate = msg.twist.twist.angular.z
+            # Calculate linear speed magnitude
+            linear = msg.twist.twist.linear
+            self._linear_speed = math.sqrt(linear.x**2 + linear.y**2 + linear.z**2)
+            self._last_odom_time = self.get_clock().now()
     
     def _handle_goal(self, goal_request) -> GoalResponse:
         self.get_logger().info(
@@ -142,11 +148,12 @@ class GoToGoalServer(Node):
         t_yaw = self._yaw_from_quaternion(gp.orientation)
 
         state = _State.ALIGN
-        dt = 1.0 / self._rate_hz
+        rate = self.create_rate(self._rate_hz)
         feedback = NavigateToPose.Feedback()
         result = NavigateToPose.Result()
 
         while rclpy.ok():
+            # --- cancel check ---
             if goal_handle.is_cancel_requested:
                 self._stop()
                 goal_handle.canceled()
@@ -154,15 +161,34 @@ class GoToGoalServer(Node):
                 result.success = False
                 result.final_position_error = self._distance(tx, ty)
                 result.final_heading_error = abs(self._normalize(t_yaw - self._yaw))
-                return resul
+                return result
+
+            # --- snapshot odometry (thread-safe) ---
+            with self._odom_lock:
+                cx, cy, cyaw = self._x, self._y, self._yaw
+                cyaw_rate = self._yaw_rate
+                clin_speed = self._linear_speed
+                odom_age = (self.get_clock().now() - self._last_odom_time).nanoseconds / 1e9
+
+            # --- odom staleness watchdog ---
+            if odom_age > self._odom_timeout:
+                self._stop()
+                goal_handle.abort()
+                self.get_logger().error(
+                    f"Odometry stale ({odom_age:.2f}s > {self._odom_timeout}s). Aborting goal."
+                )
+                result.success = False
+                result.final_position_error = self._distance(tx, ty)
+                result.final_heading_error = abs(self._normalize(t_yaw - cyaw))
+                return result
 
             # --- errors ---
-            dx = tx - self._x
-            dy = ty - self._y
+            dx = tx - cx
+            dy = ty - cy
             dist = math.hypot(dx, dy)
             bearing = math.atan2(dy, dx)
-            heading_err = self._normalize(bearing - self._yaw)
-            final_yaw_err = self._normalize(t_yaw - self._yaw)
+            heading_err = self._normalize(bearing - cyaw)
+            final_yaw_err = self._normalize(t_yaw - cyaw)
 
             # --- FSM ---
             if state is _State.ALIGN:
@@ -170,32 +196,39 @@ class GoToGoalServer(Node):
                 w = self._compute_align(heading_err)
                 if (
                     abs(heading_err) < self._align_tol
-                    and abs(self._yaw_rate) < self._ang_vel_thresh
+                    and abs(cyaw_rate) < self._ang_vel_thresh
                 ):
                     state = _State.DRIVE
                     self.get_logger().info("ALIGN → DRIVE")
 
             elif state is _State.DRIVE:
-                v, w = self._compute_drive(dist, heading_err)
-                if dist < self._pos_tol and self._linear_speed < self._lin_vel_thresh:
-                    state = _State.ORIENT
-                    self.get_logger().info("DRIVE → ORIENT")
+                # Re-align if heading has drifted too far
+                if abs(heading_err) > self._realign_thr:
+                    state = _State.ALIGN
+                    v = 0.0
+                    w = self._compute_align(heading_err)
+                    self.get_logger().info("DRIVE → ALIGN (re-align)")
+                else:
+                    v, w = self._compute_drive(dist, heading_err)
+                    if dist < self._pos_tol and clin_speed < self._lin_vel_thresh:
+                        state = _State.ORIENT
+                        self.get_logger().info("DRIVE → ORIENT")
 
             elif state is _State.ORIENT:
                 v = 0.0
                 w = self._compute_orient(final_yaw_err)
                 if (
                     abs(final_yaw_err) < self._orient_tol
-                    and abs(self._yaw_rate) < self._ang_vel_thresh
+                    and abs(cyaw_rate) < self._ang_vel_thresh
                 ):
-                    break  
+                    break
 
             self._publish_cmd(v, w)
 
             feedback.current_state = state.name
             feedback.distance_to_goal = dist
             goal_handle.publish_feedback(feedback)
-            time.sleep(dt)
+            rate.sleep()
 
         self._stop()
         goal_handle.succeed()
@@ -212,14 +245,15 @@ class GoToGoalServer(Node):
 
 
     def _compute_align(self, heading_err: float) -> float:
-        """Return angular velocity for ALIGN state with PD control and minimum velocity."""
+        """Return angular velocity for ALIGN state with PD control and ramped minimum velocity."""
         # PD control: proportional + derivative damping
         w = self._kp_rotate * heading_err - self._kd_rotate * self._yaw_rate
         w = self._clamp(w, self._w_max)
 
-        # Apply minimum velocity to prevent stalling
+        # Ramp minimum velocity down as error approaches tolerance to prevent oscillation
         if abs(heading_err) > self._align_tol:
-            w = math.copysign(max(abs(w), 0.15), w)
+            min_w = 0.15 * min(abs(heading_err) / (3.0 * self._align_tol), 1.0)
+            w = math.copysign(max(abs(w), min_w), w)
 
         return w
 
@@ -232,14 +266,15 @@ class GoToGoalServer(Node):
         return v, w
 
     def _compute_orient(self, yaw_err: float) -> float:
-        """Return angular velocity for ORIENT state with PD control and minimum velocity."""
+        """Return angular velocity for ORIENT state with PD control and ramped minimum velocity."""
         # PD control: proportional + derivative damping
         w = self._kp_rotate * yaw_err - self._kd_rotate * self._yaw_rate
         w = self._clamp(w, self._w_max)
 
-        # Apply minimum velocity to prevent stalling
+        # Ramp minimum velocity down as error approaches tolerance to prevent oscillation
         if abs(yaw_err) > self._orient_tol:
-            w = math.copysign(max(abs(w), 0.15), w)
+            min_w = 0.15 * min(abs(yaw_err) / (3.0 * self._orient_tol), 1.0)
+            w = math.copysign(max(abs(w), min_w), w)
 
         return w
 

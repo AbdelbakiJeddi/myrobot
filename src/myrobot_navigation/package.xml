@@ -12,6 +12,10 @@
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
+  <depend>python3-numpy</depend>
+  <depend>python3-matplotlib</depend>  
+  <depend>ament_index_python</depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -8,7 +8,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY launch maps config
+  DIRECTORY launch maps config waypoints
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -20,6 +20,7 @@ install(
   PROGRAMS ${PROJECT_NAME}/odom_logger.py
   PROGRAMS ${PROJECT_NAME}/go_to_goal_server.py
   PROGRAMS ${PROJECT_NAME}/go_to_goal_client.py
+  PROGRAMS ${PROJECT_NAME}/path_visual.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
