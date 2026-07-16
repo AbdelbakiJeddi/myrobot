@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>myrobot_bringup</name>
+  <name>myrobot_localization</name>
   <version>0.0.0</version>
-  <description>myrobot Bringup package</description>
+  <description>State estimation — IMU driver and EKF fusion</description>
   <maintainer email="jeddiabdelbaki3@gmail.com">abok</maintainer>
   <license>Apache 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <exec_depend>rplidar_ros</exec_depend>
-  <exec_depend>rviz2</exec_depend>
-  <exec_depend>myrobot_hardware</exec_depend>
-  <exec_depend>myrobot_description</exec_depend>
-  <exec_depend>myrobot_localization</exec_depend>
-  <exec_depend>myrobot_control</exec_depend>
-  <exec_depend>myrobot_interfaces</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
+  <depend>sensor_msgs</depend>
+  <exec_depend>python3-smbus2</exec_depend>
+  <exec_depend>i2c-tools</exec_depend>
+  <exec_depend>robot_localization</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

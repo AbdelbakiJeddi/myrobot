@@ -19,7 +19,6 @@ def generate_launch_description():
     """
     Real-robot bringup with sequenced node startup.
     """
-    # ── Launch arguments ──────────────────────────────────────────────
     use_nav_arg = DeclareLaunchArgument(
         "launch_navigation",
         default_value="false",
@@ -27,13 +26,11 @@ def generate_launch_description():
     )
     launch_navigation = LaunchConfiguration("launch_navigation")
 
-    # ── Paths ─────────────────────────────────────────────────────────
     description_pkg = get_package_share_directory("myrobot_description")
-    controller_pkg = get_package_share_directory("myrobot_controller")
-    firmware_pkg = get_package_share_directory("myrobot_firmware")
-    navigation_pkg = get_package_share_directory("myrobot_navigation")
+    controller_pkg = get_package_share_directory("myrobot_bringup")
+    hardware_pkg = get_package_share_directory("myrobot_hardware")
+    navigation_pkg = get_package_share_directory("myrobot_control")
 
-    # ── Robot description (URDF via xacro) ────────────────────────────
     robot_description = ParameterValue(
         Command([
             "xacro ",
@@ -42,8 +39,9 @@ def generate_launch_description():
         value_type=str,
     )
 
-    controllers_yaml = os.path.join(controller_pkg, "config", "myrobot_controllers.yaml")
-    ekf_yaml = os.path.join(firmware_pkg, "config", "ekf.yaml")
+    controllers_yaml = os.path.join(controller_pkg, "config", "controllers.yaml")
+    ekf_yaml = os.path.join(
+        get_package_share_directory("myrobot_localization"), "config", "ekf.yaml")
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
@@ -62,6 +60,18 @@ def generate_launch_description():
         output="screen",
     )
 
+    # Bridge /cmd_vel (raw Twist, e.g. teleop) → /myrobot_controller/cmd_vel (TwistStamped)
+    twist_relay = TimerAction(
+        period=6.0,
+        actions=[
+            Node(
+                package="myrobot_control",
+                executable="twist_relay.py",
+                name="twist_relay",
+                output="screen",
+            ),
+        ],
+    )
 
     joint_state_broadcaster_spawner = TimerAction(
         period=2.0,
@@ -95,27 +105,13 @@ def generate_launch_description():
         ],
     )
 
-    mpu6050_node = TimerAction(
-        period=2.0,
-        actions=[
-            Node(
-                package="myrobot_firmware",
-                executable="mpu6050_driver.py",
-                name="mpu6050_driver",
-                output="screen",
-            ),
-        ],
-    )
-
-    robot_localization_ekf = TimerAction(
+    localization = TimerAction(
         period=8.0,
         actions=[
-            Node(
-                package="robot_localization",
-                executable="ekf_node",
-                name="ekf_filter_node",
-                output="screen",
-                parameters=[ekf_yaml],
+            IncludeLaunchDescription(
+                os.path.join(
+                    get_package_share_directory("myrobot_localization"),
+                    "launch", "localization.launch.py"),
             ),
         ],
     )
@@ -124,21 +120,20 @@ def generate_launch_description():
         period=10.0,
         actions=[
             IncludeLaunchDescription(
-                os.path.join(navigation_pkg, "launch", "go_to_goal.launch.py"),
+                os.path.join(navigation_pkg, "launch", "control.launch.py"),
             ),
         ],
         condition=IfCondition(launch_navigation),
     )
 
-    # ── Assemble ──────────────────────────────────────────────────────
     return LaunchDescription([
         use_nav_arg,
 
         robot_state_publisher,
         controller_manager,
+        twist_relay,
         joint_state_broadcaster_spawner,
         wheel_controller_spawner,
-        mpu6050_node,
-        robot_localization_ekf,
+        localization,
         navigation,
     ])

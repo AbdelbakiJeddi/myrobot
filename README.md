@@ -10,14 +10,19 @@ Simple navigation stack for the physical robot (Raspberry Pi 5, Ubuntu 24.04, RO
 - **`feature/sim/simple_nav`** — Simple-navigation work in simulation.
 - **`feature/real/nav2`** — Real-robot Nav2 implementation.
 
-## What's on this branch
+## Package Architecture
 
-- `myrobot_description/` — URDF/xacro, robot state publisher, RViz display.
-- `myrobot_bringup/` — Launch files for the real hardware (`real_robot.launch.py`).
-- `myrobot_controller/` — ROS 2 controllers (`controller.launch.py`).
-- `myrobot_firmware/` — Arduino firmware with FeedForward PID (encoder-based); hardware interface launch.
-- `myrobot_navigation/` — `Go_To_Pose` action server + client, waypoint client (`go_to_goal_client.py`), odom logger, `waypoints.yaml`.
-- `myrobot_actions/` — Custom ROS 2 actions, services, and messages.
+Single-responsibility ROS 2 packages under `src/`:
+
+| Package | Responsibility |
+|---|---|
+| `myrobot_interfaces` | Custom actions/msgs/srvs (`NavigateToPose.action`) |
+| `myrobot_description` | URDF/xacro robot model, RViz display |
+| `myrobot_hardware` | ros2_control `SystemInterface` plugin (C++) + Arduino firmware (robot_control, feedforward) |
+| `myrobot_localization` | MPU6050 IMU driver + robot_localization EKF config |
+| `myrobot_control` | GoToGoal action server/client, twist_relay, simple_navigator |
+| `myrobot_utils` | Diagnostics: odom_logger, path_visualizer, wheel_odometry_logger |
+| `myrobot_bringup` | Central launch entry point + all configs, maps, waypoints |
 
 ## Run
 
@@ -28,9 +33,14 @@ colcon build
 source install/setup.bash
 ```
 
-Launch the simple navigation stack:
+Launch the full real-robot stack (add `launch_navigation:=true` for nav):
 ```bash
-ros2 launch myrobot_navigation go_to_goal.launch.py
+ros2 launch myrobot_bringup real_robot.launch.py
+```
+
+Launch navigation only (requires hardware already running):
+```bash
+ros2 launch myrobot_control control.launch.py
 ```
 
 ## Recent changes
@@ -39,7 +49,7 @@ ros2 launch myrobot_navigation go_to_goal.launch.py
 - QoS updated for odometry subscribers.
 - FeedForward added to the PID in the Arduino firmware.
 
-## Known issues
-- Waypoints system fails to execute the second and third goals.
-- Full hardware-in-the-loop test pending.
-- PID tuning on the real robot still to be refined.
+## Known issues / next steps
+- PID tuning on the real robot still to be refined (calibrate left/right feedforward independently).
+- EKF relies on wheel-odometry yaw + gyro; consider adding a magnetometer for absolute heading.
+- Full hardware-in-the-loop navigation test pending.
