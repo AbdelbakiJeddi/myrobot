@@ -43,6 +43,29 @@ Launch navigation only (requires hardware already running):
 ros2 launch myrobot_control control.launch.py
 ```
 
+## Contributing
+
+Read `GENERAL_RULES.md` first. Summary:
+
+1. Pick or create a ClickUp task. Use `NEW_TASK_TEMPLATE.md` for new ones.
+2. Branch: `type/CU-id-kebab-slug`. Example: `feat/CU-abc123-goal-tolerance`.
+3. Code, commit with Conventional Commits, reference `CU-abc123`.
+4. Push branch, open PR. Title = commit subject.
+5. Fill PR body from `TASK_DONE_TEMPLATE.md`.
+6. Wait for 1+ approval and CI green.
+7. Move task to `Done` only after merge + verified on rig/sim.
+
+## Documenting Your Work
+
+Two templates in repo root:
+
+- **`NEW_TASK_TEMPLATE.md`** — copy at task creation. Fields: Description, Desired Output, Input, Configuration, Docs Needed.
+- **`TASK_DONE_TEMPLATE.md`** — copy into PR body when done. Fields: Short Description, What Did, Data, Input, Output, Changes, Packages Needed, How to Run, Args.
+
+Tuning changes (PID, EKF, gains): document old vs new value, why, and link the test run in the PR body. No silent retunes.
+
+Full rules: see `GENERAL_RULES.md`.
+
 ## Recent changes
 - Holding time between consecutive waypoint goals.
 - Tuned rotate-to-heading PD gains.
