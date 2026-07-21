@@ -1,0 +1,14 @@
+go_to_goal_client:
+  ros__parameters:
+    yaw_in_degrees: true
+    # Waypoints expressed relative to the robot's start pose (odom frame).
+    # goal_0: drive 1.0m forward
+    goal_0:
+      x: 1.0
+      y: 0.0
+      yaw: 0.0
+    # goal_1: drive to (1.0, 1.0) and face +90°
+    goal_1:
+      x: 1.0
+      y: 1.0
+      yaw: 90.0

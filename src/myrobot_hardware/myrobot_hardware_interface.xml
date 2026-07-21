@@ -1,0 +1,9 @@
+<library path="myrobot_hardware">
+    <class name="myrobot_hardware/MyRobotHardwareInterface"
+      type="myrobot_hardware::MyRobotHardwareInterface"
+      base_class_type="hardware_interface::SystemInterface">
+      <description>
+        MyRobot Hardware Interface — serial communication with Arduino
+      </description>
+    </class>
+  </library>

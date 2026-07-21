@@ -1,6 +1,0 @@
-frame_id: odom
-yaw_deg: true
-waypoints:
-  - x: 1.0
-    y: 0.0
-    yaw: 90
