@@ -13,17 +13,17 @@ ekf_filter_node:
     imu0: /imu/out
     imu0_config:
       [false, false, false,   # x, y, z
-       false, false, false,   # roll, pitch, yaw
+       false, false, true,   # roll, pitch, yaw
        false, false, false,   # vx, vy, vz
-       false, false, true,    # vroll, vpitch, vyaw ← gyro.z only
+       false, false, false,    # vroll, vpitch, vyaw ← gyro.z only
        false, false, false]   # ax, ay, az
     imu0_differential: false
     imu0_remove_gravitational_acceleration: false
 
     odom0: /myrobot_controller/odom
     odom0_config:
-      [false,  false,  false,   # x, y, z
-       false, false, false,   # roll, pitch, yaw  (let gyro own heading)
+      [true,  true,  false,   # x, y, z
+       false, false, true,   # roll, pitch, yaw  (let gyro own heading)
        true,  true,  false,   # vx, vy, vz
        false, false, false,   # vroll, vpitch, vyaw ← let IMU own this
        false, false, false]   # ax, ay, az

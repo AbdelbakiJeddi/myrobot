@@ -60,7 +60,7 @@ class MPU6050_Driver(Node):
         self.init_mpu6050(calibrate=True)
 
         self.imu_pub_ = self.create_publisher(
-            Imu, "/imu/out", qos_profile=qos_profile_sensor_data
+            Imu, "/imu/data_raw", qos_profile=qos_profile_sensor_data
         )
         self.imu_msg_ = Imu()
         self.imu_msg_.header.frame_id = "imu_link"

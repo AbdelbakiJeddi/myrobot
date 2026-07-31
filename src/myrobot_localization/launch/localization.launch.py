@@ -16,6 +16,24 @@ def generate_launch_description():
         output="screen",
     )
 
+    madgwick_filter_node = Node(
+        package='imu_filter_madgwick',
+        executable='imu_filter_madgwick_node',
+        name='imu_filter_madgwick_node',
+        output='screen',
+        parameters=[{
+            'use_mag': False,            # set True if you have a magnetometer
+            'publish_tf': False,         # set True if you want it to publish a TF
+            'world_frame': 'enu',        # 'enu', 'ned', or 'nwu'
+            'fixed_frame': 'odom',
+            'gain': 0.1,
+            'zeta': 0.0,
+        }],
+        remappings=[
+            ('imu/data', 'imu/out'),
+        ]
+    )
+
     robot_localization_ekf = Node(
         package="robot_localization",
         executable="ekf_node",

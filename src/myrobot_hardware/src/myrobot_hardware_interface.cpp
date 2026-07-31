@@ -7,10 +7,10 @@
 
 namespace myrobot_hardware
 {
-  constexpr int LEFT_WHEEL = 0;
-  constexpr int RIGHT_WHEEL = 1;
+  constexpr int LEFT_WHEEL = 1;
+  constexpr int RIGHT_WHEEL = 0;
 
-  constexpr double ENCODER_TICKS_PER_REV = 4096.0;
+  constexpr double ENCODER_TICKS_PER_REV = 900.0;
   constexpr double TWO_PI = 6.28318530718;
 
   MyRobotHardwareInterface::MyRobotHardwareInterface()
@@ -171,6 +171,8 @@ namespace myrobot_hardware
 
     */
 
+    //RCLCPP_INFO(rclcpp::get_logger("MyRobotHardwareInterface"), "RX: %s", message.c_str());
+
     int result = sscanf(message.c_str(), "L:%ld,%lf,R:%ld,%lf", &left_ticks, &left_vel, &right_ticks, &right_vel);
 
     if (result == 4)
@@ -194,6 +196,8 @@ namespace myrobot_hardware
     message << "L:" << std::fixed << std::setprecision(3) << velocity_commands_[LEFT_WHEEL]
             << ",R:" << velocity_commands_[RIGHT_WHEEL] << "\n";
 
+    //RCLCPP_INFO(rclcpp::get_logger("MyRobotHardwareInterface"), "TX: %s", message.str().c_str());
+    
     try
     {
       arduino_.Write(message.str());

@@ -41,7 +41,7 @@ double right_target_vel = 0.0;
 
 // Velocity filter parameter (Exponential Moving Average)
 // alpha = 1.0 (unfiltered), alpha = 0.2-0.4 (smooth low-pass filtering)
-const double VELOCITY_FILTER_ALPHA = 0.35;
+const double VELOCITY_FILTER_ALPHA = 1.0;
 
 double left_measured_vel = 0.0;
 double right_measured_vel = 0.0;
@@ -188,7 +188,7 @@ void calculateVelocity(double dt)
 {
   if (dt <= 0.0001) return;
 
-  currentLeftTicks = leftEncoder.read();
+  currentLeftTicks = -leftEncoder.read();
   currentRightTicks = rightEncoder.read();
 
   long dLeft = currentLeftTicks - lastLeftTicks;
