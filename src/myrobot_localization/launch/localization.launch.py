@@ -44,5 +44,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         mpu6050_node,
+        madgwick_filter_node,
         robot_localization_ekf,
     ])

@@ -76,6 +76,17 @@ def generate_launch_description():
             ),
         ],
     )
+    twist_relay = TimerAction(
+        period=6.0,
+        actions=[
+            Node(
+                package="myrobot_control",
+                executable="twist_relay.py",
+                name="twist_relay",
+                output="screen",
+            ),
+        ],
+    )
 
     return LaunchDescription(
         [
@@ -83,5 +94,6 @@ def generate_launch_description():
             controller_manager,
             joint_state_broadcaster_spawner,
             wheel_controller_spawner,
+            twist_relay
         ]
     )

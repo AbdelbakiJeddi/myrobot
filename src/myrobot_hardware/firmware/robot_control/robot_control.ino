@@ -19,7 +19,7 @@ Encoder leftEncoder(2, A1);
 Encoder rightEncoder(3, 4);
 
 // Encoder parameters
-const double TICKS_PER_REV = 450.0; // Adjust to match your hardware encoder resolution
+const double TICKS_PER_REV = 900.0; // Adjust to match your hardware encoder resolution
 
 // Timing settings
 const unsigned long CONTROL_INTERVAL_MS = 20; // 50 Hz PID control loop
@@ -39,33 +39,31 @@ unsigned long last_command_time = 0;
 double left_target_vel = 0.0;
 double right_target_vel = 0.0;
 
-// Velocity filter parameter (Exponential Moving Average)
-// alpha = 1.0 (unfiltered), alpha = 0.2-0.4 (smooth low-pass filtering)
+// alpha = 1.0 (unfiltered), alpha = 0.2-0.4 (low-pass filtering)
 const double VELOCITY_FILTER_ALPHA = 1.0;
 
 double left_measured_vel = 0.0;
 double right_measured_vel = 0.0;
 
-// Motor PWM outputs (-255 to 255)
 double left_pwm = 0.0;
 double right_pwm = 0.0;
 
-// ================= FEEDFORWARD GAINS =================
+// FeedForward Gains
 // kS: Voltage/PWM offset needed to overcome static friction (stiction)
 // kV: Voltage/PWM per unit velocity (rad/s)
-double kS_l = 10.0;
-double kV_l = 20.0;
+double kS_l = 30.0;
+double kV_l = 7.0;
 
-double kS_r = 10.0;
-double kV_r = 20.0;
+double kS_r = 30.0;
+double kV_r = 7.0;
 
-// ================= PID GAINS =================
-double Kp_l = 20.0;
-double Ki_l = 5.0;
+// PID Gains
+double Kp_l = 10.0;
+double Ki_l = 0.0;
 double Kd_l = 0.0;
 
-double Kp_r = 20.0;
-double Ki_r = 5.0;
+double Kp_r = 10.0;
+double Ki_r = 0.0;
 double Kd_r = 0.0;
 
 // PID controllers
@@ -100,8 +98,8 @@ void setup()
   rightPID.SetMode(AUTOMATIC);
 
   // Set limits for feedback PID component
-  leftPID.SetOutputLimits(-255, 255);
-  rightPID.SetOutputLimits(-255, 255);
+  leftPID.SetOutputLimits(-150, 150);
+  rightPID.SetOutputLimits(-150, 150);
 
   unsigned long now = millis();
   last_control_time = now;
@@ -132,7 +130,6 @@ void loop()
 
     calculateVelocity(dt);
 
-    // Run feedback PID computation
     leftPID.Compute();
     rightPID.Compute();
 
@@ -150,11 +147,11 @@ void loop()
       right_ff = (right_target_vel > 0 ? kS_r : -kS_r) + (kV_r * right_target_vel);
     }
 
-    // Combine PID feedback and feedforward
+    // FeedForward + PID Output
     double total_left_pwm = left_pwm + left_ff;
     double total_right_pwm = right_pwm + right_ff;
 
-    // Clean stop when setpoint is zero
+    //TODO: needs to be reviewed if it helps or not and what is its effect 
     if (abs(left_target_vel) < 0.001)
     {
       total_left_pwm = 0.0;
@@ -165,8 +162,7 @@ void loop()
       total_right_pwm = 0.0;
       right_pwm = 0.0;
     }
-
-    // Constrain PWM output within hardware range
+      
     total_left_pwm = constrain(total_left_pwm, -255.0, 255.0);
     total_right_pwm = constrain(total_right_pwm, -255.0, 255.0);
 
@@ -174,7 +170,7 @@ void loop()
     setRightMotor(total_right_pwm);
   }
 
-  // Send encoder and velocity feedback to host
+  //Send encoder and velocity feedback
   if (now - last_feedback_time >= FEEDBACK_INTERVAL_MS)
   {
     sendFeedback();
@@ -182,13 +178,12 @@ void loop()
   }
 }
 
-// ================= HELPER FUNCTIONS =================
 
 void calculateVelocity(double dt)
 {
   if (dt <= 0.0001) return;
 
-  currentLeftTicks = -leftEncoder.read();
+  currentLeftTicks = -leftEncoder.read(); // Encoder is inverted
   currentRightTicks = rightEncoder.read();
 
   long dLeft = currentLeftTicks - lastLeftTicks;
@@ -204,6 +199,7 @@ void calculateVelocity(double dt)
   double right_vel_raw = rightTPS * 2.0 * M_PI / TICKS_PER_REV;
 
   // Exponential Moving Average (EMA) low-pass filter
+  //TODO: to be tuned for later work for now VELOCITY_FILTER_ALPHA = 1.0 no filtering
   left_measured_vel = VELOCITY_FILTER_ALPHA * left_vel_raw + (1.0 - VELOCITY_FILTER_ALPHA) * left_measured_vel;
   right_measured_vel = VELOCITY_FILTER_ALPHA * right_vel_raw + (1.0 - VELOCITY_FILTER_ALPHA) * right_measured_vel;
 }
@@ -216,16 +212,18 @@ void readCommand()
   while (Serial.available() > 0)
   {
     char c = Serial.read();
+    //Parase string by index searching for L: and R: to get the target_vel 
     if (c == '\n' || c == '\r')
     {
       if (idx > 0)
       {
         buffer[idx] = '\0';
-        float L, R;
-        if (sscanf(buffer, "L:%f,R:%f", &L, &R) == 2)
+        char *lPtr = strstr(buffer, "L:");
+        char *rPtr = strstr(buffer, "R:");
+        if (lPtr && rPtr)
         {
-          left_target_vel = L;
-          right_target_vel = R;
+          left_target_vel = atof(lPtr + 2);
+          right_target_vel = atof(rPtr + 2);
           last_command_time = millis();
         }
         idx = 0;
@@ -238,6 +236,7 @@ void readCommand()
   }
 }
 
+//control right motor
 void setRightMotor(double pwm)
 {
   if (pwm >= 0)
@@ -253,6 +252,7 @@ void setRightMotor(double pwm)
   analogWrite(L298N_enA, abs((int)pwm));
 }
 
+//control left motor
 void setLeftMotor(double pwm)
 {
   if (pwm >= 0)
@@ -276,7 +276,7 @@ void stopMotors()
 
 void sendFeedback()
 {
-  // Output format matches host driver expecting: "L:<ticks>,<vel>,R:<ticks>,<vel>\n"
+  // Output format "L:<ticks>,<vel>,R:<ticks>,<vel>\n"
   Serial.print("L:");
   Serial.print(currentLeftTicks);
   Serial.print(",");
