@@ -6,3 +6,5 @@ install/*
 *.log
 pycache__/*
 *.pyc
+
+my_tasks/

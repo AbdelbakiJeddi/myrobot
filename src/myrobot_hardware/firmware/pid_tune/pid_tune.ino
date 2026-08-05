@@ -48,22 +48,25 @@ double right_measured_vel = 0.0;
 double left_pwm = 0.0;
 double right_pwm = 0.0;
 
+double total_left_pwm = 0;
+double total_right_pwm = 0;
+
 // FeedForward Gains
 // kS: Voltage/PWM offset needed to overcome static friction (stiction)
 // kV: Voltage/PWM per unit velocity (rad/s)
-double kS_l = 32.0;
+double kS_l = 30.0;
 double kV_l = 7.0;
 
-double kS_r = 32.0;
-double kV_r = 9.0;
+double kS_r = 30.0;
+double kV_r = 7.0;
 
 // PID Gains
-double Kp_l = 11.0;
-double Ki_l = 11.0;
+double Kp_l = 10.0;
+double Ki_l = 0.0;
 double Kd_l = 0.0;
 
-double Kp_r = 12.0;
-double Ki_r = 11.0;
+double Kp_r = 10.0;
+double Ki_r = 0.0;
 double Kd_r = 0.0;
 
 // PID controllers
@@ -148,8 +151,8 @@ void loop()
     }
 
     // FeedForward + PID Output
-    double total_left_pwm = left_pwm + left_ff;
-    double total_right_pwm = right_pwm + right_ff;
+    total_left_pwm = left_pwm + left_ff;
+    total_right_pwm = right_pwm + right_ff;
 
     //TODO: needs to be reviewed if it helps or not and what is its effect 
     if (abs(left_target_vel) < 0.001)
@@ -209,6 +212,7 @@ void readCommand()
   static char buffer[64];
   static byte idx = 0;
 
+  //Drain the message in the serial buffer 
   while (Serial.available() > 0)
   {
     char c = Serial.read();
@@ -220,11 +224,32 @@ void readCommand()
         buffer[idx] = '\0';
         char *lPtr = strstr(buffer, "L:");
         char *rPtr = strstr(buffer, "R:");
+        char *lp = strstr(buffer, "LP:");
+        char *ld = strstr(buffer, "LD:");
+        char *li = strstr(buffer, "LI:");
+        char *lks = strstr(buffer, "LKS:");
+        char *lkv = strstr(buffer, "LKV:");
+        char *rp = strstr(buffer, "RP:");
+        char *rd = strstr(buffer, "RD:");
+        char *ri = strstr(buffer, "RI:");
+        char *rks = strstr(buffer, "RKS:");
+        char *rkv = strstr(buffer, "RKV:");
         if (lPtr && rPtr)
         {
-          left_target_vel = atof(lPtr + 2);
+          left_target_vel = atof(lPtr + 2); // atof() starts reading and converting value to float until it find non matching type character
           right_target_vel = atof(rPtr + 2);
+          // Updated only if recieves correct message
           last_command_time = millis();
+        }
+        else if (ld && lp && li && lks && lkv){
+          kS_l = atof(lks + 4);
+          kV_l = atof(lkv + 4);
+          leftPID.SetTunings(atof(lp + 3), atof(li + 3), atof(ld + 3));
+        }
+        else if (rd && rp && ri && rks && rkv){
+          kS_r = atof(rks + 4);
+          kV_r = atof(rkv + 4);
+          rightPID.SetTunings(atof(rp + 3), atof(ri + 3), atof(rd + 3));
         }
         idx = 0;
       }
@@ -276,16 +301,20 @@ void stopMotors()
 
 void sendFeedback()
 {
-  // Output format "L:<ticks>,<vel>,R:<ticks>,<vel>\n"
+  // Output format "L:<ticks>,<vel>,<pwm>,R:<ticks>,<vel>,<pwm>\n"
   Serial.print("L:");
   Serial.print(currentLeftTicks);
   Serial.print(",");
   Serial.print(left_measured_vel, 3);
-
+  Serial.print(",");
+  Serial.print(total_left_pwm);
+  
   Serial.print(",R:");
   Serial.print(currentRightTicks);
   Serial.print(",");
   Serial.print(right_measured_vel, 3);
-
+  Serial.print(",");
+  Serial.print(total_right_pwm);
+  
   Serial.print("\n");
 }

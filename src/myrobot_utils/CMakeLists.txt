@@ -12,6 +12,7 @@ install(PROGRAMS
   ${PROJECT_NAME}/odom_logger.py
   ${PROJECT_NAME}/path_visualizer.py
   ${PROJECT_NAME}/wheel_odometry_logger.py
+  ${PROJECT_NAME}/pid_gains_tunning.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

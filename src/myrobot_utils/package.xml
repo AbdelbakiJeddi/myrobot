@@ -14,10 +14,13 @@
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>rcl_interfaces</depend>
   <depend>python3-numpy</depend>
   <depend>python3-matplotlib</depend>
   <depend>ament_index_python</depend>
   <exec_depend>ros2launch</exec_depend>
+  <exec_depend>myrobot_interfaces</exec_depend>
+  
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
