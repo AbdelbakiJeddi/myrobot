@@ -1,40 +1,45 @@
-# Gazebo Simulation
+# myrobot — Nav2 Stack (Simulation + Real)
 
-> **Active branch:** `feature/gazebo-simulation`
-
-Gazebo simulation environment for the custom mobile robot — worlds, robot model, sensor plugins, and launch files used to validate navigation and behavior before deploying to the real hardware.
+> **Branch:** `feature/nav2` — unified Nav2 implementation running on the physical robot (Raspberry Pi 5, Ubuntu 24.04, ROS 2 Jazzy) and in Gazebo simulation.
 
 ## Branches
 - **`main`** — Stable integration branch.
-- **`feature/real/nav2`** — Real-robot Nav2 implementation.
+- **`feature/nav2`** — Unified Nav2 stack (this branch). Two bringup launch files: real hardware and Gazebo simulation.
 - **`feature/sim/simple_nav`** — Simple-navigation work in simulation.
 - **`feature/real/simple_nav`** — Simple navigation on the real robot.
 
-## What's on this branch
+## Package Structure
 
-- `myrobot_description/` — URDF/xacro, robot state publisher, Gazebo launch and worlds (`empty.world`, `nav_test.world`).
-- `myrobot_bringup/` — Launch files for simulated hardware interfaces (`simulated_robot.launch.py`).
-- `myrobot_controller/` — ROS 2 controllers.
-- `myrobot_firmware/` — Simulated low-level hardware interface (encoder-based).
-- `myrobot_navigation/` — Simple navigation action and config; behavior trees.
-- `myrobot_actions/` — Custom ROS 2 actions, services, and messages.
+- **`myrobot_description/`** — URDF/xacro robot model, robot state publisher, Gazebo launch and worlds.
+- **`myrobot_bringup/`** — Central bringup entry points (`real_robot.launch.py`, `simulated_robot.launch.py`).
+- **`myrobot_controller/`** — ROS 2 controllers (diff-drive) bridging cmd_vel to the drivetrain.
+- **`myrobot_firmware/`** — Low-level hardware interface (C++ ros2_control plugin) + IMU/MPU6050 driver + EKF config.
+- **`myrobot_navigation/`** — Nav2 configs: planner, controller, costmaps, behavior trees, maps.
+- **`myrobot_actions/`** — Custom ROS 2 actions, services, and messages.
 
 ## Run
 
 Build:
 ```bash
 cd ~/simple_bot_ws
-colcon build --symlink-install
+colcon build
 source install/setup.bash
 ```
 
-Launch Gazebo:
+### Real hardware
 ```bash
-ros2 launch myrobot_description gazebo.launch.py            # empty world
-ros2 launch myrobot_navigation navigation.launch.py        # world with waypoints
+ros2 launch myrobot_bringup real_robot.launch.py
 ```
 
-Visualize:
+### Simulation
 ```bash
-ros2 run rviz2 rviz2
+ros2 launch myrobot_bringup simulated_robot.launch.py
 ```
+
+### Send a goal
+```bash
+ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose \
+    "{pose: {header: {frame_id: 'map'}, pose: {position: {x: 1.0, y: 1.0, z: 0.0}, orientation: {w: 1.0}}}}"
+```
+
+You can also set goals interactively from RViz using the **Nav2 Goal** tool.

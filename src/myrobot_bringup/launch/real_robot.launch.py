@@ -1,6 +1,6 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
@@ -23,6 +23,13 @@ def generate_launch_description():
         )
     )
 
+    navigation = IncludeLaunchDescription(
+        os.path.join(
+            get_package_share_directory("myrobot_navigation"),
+            "launch",
+            "navigation.launch.py"
+        )
+    )
 
     rviz = Node(
         package="rviz2",
@@ -30,10 +37,10 @@ def generate_launch_description():
         name="rviz2",
         output="screen"
     )
-        
-    return LaunchDescription([
 
+    return LaunchDescription([
         hardware_interface,
         controller,
+        navigation,
         rviz
     ])
