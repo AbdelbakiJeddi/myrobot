@@ -17,6 +17,7 @@ import math
 import time
 import struct
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Imu
 
 # ── MPU-6050 register map ────────────────────────────────────────────────────
@@ -60,8 +61,11 @@ class MPU6050_Driver(Node):
 
         self.imu_pub_ = self.create_publisher(
             Imu, "/imu/data_raw",
-            # Default QoS (reliable) so imu_filter_madgwick's reliable subscriber
-            # connects. sensor_data (best-effort) here silently drops messages.
+            # Best-effort sensor QoS: matches imu_filter_madgwick's
+            # rmw_qos_profile_sensor_data subscriber. Default (reliable) QoS
+            # still connects but drops to best-effort on the wire for a
+            # best-effort subscriber; be explicit instead.
+            qos_profile_sensor_data,
         )
         self.imu_msg_ = Imu()
         self.imu_msg_.header.frame_id = "imu_link"
