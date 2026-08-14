@@ -14,15 +14,15 @@ Simple navigation stack for the physical robot (Raspberry Pi 5, Ubuntu 24.04, RO
 
 Single-responsibility ROS 2 packages under `src/`:
 
-| Package | Responsibility |
-|---|---|
-| `myrobot_interfaces` | Custom actions/msgs/srvs (`NavigateToPose.action`) |
-| `myrobot_description` | URDF/xacro robot model, RViz display |
-| `myrobot_hardware` | ros2_control `SystemInterface` plugin (C++) + Arduino firmware (robot_control, feedforward) |
-| `myrobot_localization` | MPU6050 IMU driver + robot_localization EKF config |
-| `myrobot_control` | GoToGoal action server/client, twist_relay, simple_navigator |
-| `myrobot_utils` | Diagnostics: odom_logger, path_visualizer, wheel_odometry_logger |
-| `myrobot_bringup` | Central launch entry point + all configs, maps, waypoints |
+| Package                | Responsibility                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------- |
+| `myrobot_interfaces`   | Custom actions/msgs/srvs (`NavigateToPose.action`)                                          |
+| `myrobot_description`  | URDF/xacro robot model, RViz display                                                        |
+| `myrobot_hardware`     | ros2_control `SystemInterface` plugin (C++) + Arduino firmware (robot_control, feedforward) |
+| `myrobot_localization` | MPU6050 IMU driver + robot_localization EKF config                                          |
+| `myrobot_control`      | GoToGoal action server/client, twist_relay, simple_navigator                                |
+| `myrobot_utils`        | Diagnostics: odom_logger, path_visualizer, wheel_odometry_logger                            |
+| `myrobot_bringup`      | Central launch entry point + all configs, maps, waypoints                                   |
 
 ## Run
 

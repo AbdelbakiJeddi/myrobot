@@ -11,11 +11,22 @@ RIGHT_JOINT = "right_wheel_joint"
 class WheelDistanceLogger(Node):
     def __init__(self):
         super().__init__("wheel_distance_logger")
+        self.declare_parameter("log_rate", 1.0)
+        self.log_rate_ = float(self.get_parameter("log_rate").value)
+
         self.sub_ = self.create_subscription(
             JointState, "/joint_states", self.cb, 10)
-        self.left_start_ = None
-        self.right_start_ = None
-        self.get_logger().info("Waiting for joint states…")
+
+        self.left_prev_ = None
+        self.right_prev_ = None
+        self.left_dist_ = 0.0
+        self.right_dist_ = 0.0
+        self.last_log_ = self.get_clock().now()
+
+        self.create_timer(1.0 / self.log_rate_, self.log)
+
+        self.get_logger().info(
+            "Logging wheel travel distance. Drive the robot, then read the totals.")
 
     def cb(self, msg: JointState):
         try:
@@ -28,18 +39,19 @@ class WheelDistanceLogger(Node):
         left_pos = msg.position[li]
         right_pos = msg.position[ri]
 
-        if self.left_start_ is None:
-            self.left_start_ = left_pos
-            self.right_start_ = right_pos
-            self.get_logger().info("Reference set — logging distance from this point.")
+        if self.left_prev_ is None:
+            self.left_prev_ = left_pos
+            self.right_prev_ = right_pos
             return
 
-        left_dist = (left_pos - self.left_start_) * WHEEL_RADIUS
-        right_dist = (right_pos - self.right_start_) * WHEEL_RADIUS
+        self.left_dist_ += abs(left_pos - self.left_prev_) * WHEEL_RADIUS
+        self.right_dist_ += abs(right_pos - self.right_prev_) * WHEEL_RADIUS
+        self.left_prev_ = left_pos
+        self.right_prev_ = right_pos
 
+    def log(self):
         self.get_logger().info(
-            f"Left: {left_dist:+.4f} m  |  Right: {right_dist:+.4f} m  |  "
-            f"Diff: {abs(left_dist - right_dist):.4f} m")
+            f"Left: {self.left_dist_:.4f} m  |  Right: {self.right_dist_:.4f} m")
 
 
 def main():

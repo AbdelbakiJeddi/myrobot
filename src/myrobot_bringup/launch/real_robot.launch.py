@@ -28,7 +28,6 @@ def generate_launch_description():
 
     description_pkg = get_package_share_directory("myrobot_description")
     controller_pkg = get_package_share_directory("myrobot_bringup")
-    hardware_pkg = get_package_share_directory("myrobot_hardware")
     navigation_pkg = get_package_share_directory("myrobot_control")
 
     robot_description = ParameterValue(
@@ -60,7 +59,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # Bridge /cmd_vel (raw Twist, e.g. teleop) → /myrobot_controller/cmd_vel (TwistStamped)
+    # Bridge /cmd_vel → /myrobot_controller/cmd_vel (TwistStamped)
     twist_relay = TimerAction(
         period=6.0,
         actions=[

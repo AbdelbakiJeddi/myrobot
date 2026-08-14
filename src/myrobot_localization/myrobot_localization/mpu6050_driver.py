@@ -17,7 +17,6 @@ import math
 import time
 import struct
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import Imu
 
 # ── MPU-6050 register map ────────────────────────────────────────────────────
@@ -37,7 +36,7 @@ ONE_G_LSB   = 16384
 
 DLPF_CFG = 3
 
-CALIBRATION_SAMPLES = 1000
+CALIBRATION_SAMPLES = 500
 CALIBRATION_DELAY   = 0.005
 
 
@@ -60,7 +59,9 @@ class MPU6050_Driver(Node):
         self.init_mpu6050(calibrate=True)
 
         self.imu_pub_ = self.create_publisher(
-            Imu, "/imu/data_raw", qos_profile=qos_profile_sensor_data
+            Imu, "/imu/data_raw",
+            # Default QoS (reliable) so imu_filter_madgwick's reliable subscriber
+            # connects. sensor_data (best-effort) here silently drops messages.
         )
         self.imu_msg_ = Imu()
         self.imu_msg_.header.frame_id = "imu_link"

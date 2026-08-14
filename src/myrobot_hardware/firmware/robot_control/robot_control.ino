@@ -55,15 +55,15 @@ double kS_l = 32.0;
 double kV_l = 7.0;
 
 double kS_r = 32.0;
-double kV_r = 9.0;
+double kV_r = 7.0;
 
 // PID Gains
-double Kp_l = 11.0;
-double Ki_l = 11.0;
+double Kp_l = 15.0;
+double Ki_l = 20.0;
 double Kd_l = 0.0;
 
-double Kp_r = 12.0;
-double Ki_r = 11.0;
+double Kp_r = 15.0;
+double Ki_r = 20.0;
 double Kd_r = 0.0;
 
 // PID controllers
@@ -199,7 +199,7 @@ void calculateVelocity(double dt)
   double right_vel_raw = rightTPS * 2.0 * M_PI / TICKS_PER_REV;
 
   // Exponential Moving Average (EMA) low-pass filter
-  //TODO: to be tuned for later work for now VELOCITY_FILTER_ALPHA = 1.0 no filtering
+  // TODO: to be tuned for later work for now VELOCITY_FILTER_ALPHA = 1.0 no filtering
   left_measured_vel = VELOCITY_FILTER_ALPHA * left_vel_raw + (1.0 - VELOCITY_FILTER_ALPHA) * left_measured_vel;
   right_measured_vel = VELOCITY_FILTER_ALPHA * right_vel_raw + (1.0 - VELOCITY_FILTER_ALPHA) * right_measured_vel;
 }
