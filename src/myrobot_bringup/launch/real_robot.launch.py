@@ -1,8 +1,14 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import (
+    DeclareLaunchArgument,
+    ExecuteProcess,
+    IncludeLaunchDescription,
+    RegisterEventHandler,
+)
 from launch.conditions import IfCondition
+from launch.event_handlers import OnProcessExit
 from launch.substitutions import (
     Command,
     LaunchConfiguration,
@@ -18,8 +24,9 @@ def generate_launch_description():
     Real-robot bringup entrypoint.
 
     No magic timers: the controller spawners self-wait on the controller
-    manager (--controller-manager-timeout) and the nav server gates on odom
-    (NEED_POSE), so all nodes start immediately.
+    manager (--controller-manager-timeout). Navigation is gated on an
+    event: it only starts after `ros2 topic wait` sees the first
+    /odometry/filtered message from the EKF.
     """
     use_nav_arg = DeclareLaunchArgument(
         "launch_navigation",
@@ -99,12 +106,26 @@ def generate_launch_description():
         ]),
     )
 
+    # Block until the EKF publishes its first filtered odometry message,
+    # then start navigation. Exits 0 when the topic has a message.
+    wait_for_odom = ExecuteProcess(
+        cmd=["ros2", "topic", "wait", "/odometry/filtered"],
+        output="screen",
+    )
+
     navigation = IncludeLaunchDescription(
         PathJoinSubstitution([
             FindPackageShare("myrobot_control"),
             "launch", "control.launch.py",
         ]),
         condition=IfCondition(launch_navigation),
+    )
+
+    start_navigation_after_odom = RegisterEventHandler(
+        OnProcessExit(
+            target_action=wait_for_odom,
+            on_exit=[navigation],
+        )
     )
 
     return LaunchDescription([
@@ -115,5 +136,6 @@ def generate_launch_description():
         joint_state_broadcaster_spawner,
         wheel_controller_spawner,
         localization,
-        navigation,
+        wait_for_odom,
+        start_navigation_after_odom,
     ])
