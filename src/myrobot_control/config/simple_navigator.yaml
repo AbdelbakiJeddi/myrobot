@@ -1,0 +1,32 @@
+simple_navigator:
+  ros__parameters:
+    # ── waypoint ─────────────────────────────────────────────────────────
+    wp_x: 0.0            # target x, arena frame [m]
+    wp_y: 0.0            # target y, arena frame [m]
+    wp_yaw: 0.0          # final heading after arrival [rad]
+
+    # ── rotate (ALIGN & ORIENT) ──────────────────────────────────────────
+    kp_rotate: 1.5
+    ki_rotate: 0.2       # kills gyro-bias drift
+    kd_rotate: 0.4       # damps from yaw_rate
+    w_max: 3.0
+    min_w_rotate: 0.15   # ramp floor near tol
+    min_overshoot_rate: 0.08   # floor only when stalled
+    align_tol: 0.02      # rad
+    ang_vel_thresh: 0.05 # rad/s, "settled"
+
+    # ── drive (DRIVE state) ──────────────────────────────────────────────
+    v_max: 0.3           # cruise speed [m/s]
+    a_max: 0.2           # accel/decel [m/s²]
+    pos_tol: 0.02        # m, "arrived"
+    lin_thresh: 0.03     # m/s, "settled"
+    kp_drive: 1.5
+    ki_drive: 0.1
+    kd_drive: 0.4
+    integral_max: 0.5    # rad·s clamp (windup)
+    realign_threshold: 0.35  # rad, re-ALIGN while driving
+
+    # ── safety ───────────────────────────────────────────────────────────
+    odom_timeout: 0.5    # s
+    max_state_time: 10.0 # s, stuck protection
+    rate_hz: 20.0
