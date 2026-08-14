@@ -26,8 +26,9 @@ def generate_launch_description():
             'publish_tf': False,         # set True if you want it to publish a TF
             'world_frame': 'enu',        # 'enu', 'ned', or 'nwu'
             'fixed_frame': 'odom',
-            'gain': 0.1,
+            'gain': 0.01,
             'zeta': 0.0,
+            'orientation_stddev': 0.15,
         }],
         remappings=[
             ('imu/data', 'imu/out'),

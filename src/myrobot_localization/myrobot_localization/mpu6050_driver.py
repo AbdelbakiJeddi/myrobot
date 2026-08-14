@@ -77,10 +77,12 @@ class MPU6050_Driver(Node):
         # Angular velocity covariance (diagonal, in rad²/s²)
         # MPU6050 gyro noise density: 0.005 °/s/√Hz
         # At DLPF 44 Hz: σ ≈ 0.005 × √44 × π/180 ≈ 5.8e-4 rad/s → σ² ≈ 3.4e-7
-        # Using 1e-6 with margin for real-world conditions
-        self.imu_msg_.angular_velocity_covariance[0] = 1e-6  # xx
-        self.imu_msg_.angular_velocity_covariance[4] = 1e-6  # yy
-        self.imu_msg_.angular_velocity_covariance[8] = 1e-6  # zz
+        # Datasheet noise alone is ~1e-6, but the EKF must not trust the gyro
+        # rate as if perfect on a vibrating robot — raise to σ ≈ 0.01 rad/s
+        # so the EKF weights wheel odometry yaw_rate more fairly.
+        self.imu_msg_.angular_velocity_covariance[0] = 1e-4  # xx
+        self.imu_msg_.angular_velocity_covariance[4] = 1e-4  # yy
+        self.imu_msg_.angular_velocity_covariance[8] = 1e-4  # zz
 
         # Linear acceleration covariance (diagonal, in m²/s⁴)
         # MPU6050 accel noise density: 400 µg/√Hz
