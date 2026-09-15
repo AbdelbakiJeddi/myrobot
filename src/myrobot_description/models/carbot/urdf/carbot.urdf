@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="carbot">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.018112 0.0026435 0.011468"
+        rpy="0 0 0" />
+      <mass
+        value="0.9342" />
+      <inertia
+        ixx="0.0048173"
+        ixy="0.0005852"
+        ixz="0.0006329"
+        iyy="0.0068459"
+        iyz="0.0002125"
+        izz="0.0068460" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 0 0.50196 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="fl_wheel">
+    <inertial>
+      <origin
+        xyz="-6.7075E-06 -0.0013992 -4.389E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.056644" />
+      <inertia
+        ixx="0.0000155"
+        ixy="0.0000000"
+        ixz="0.0000000"
+        iyy="0.0000194"
+        iyz="0.0000000"
+        izz="0.0000155" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/fl_wheel.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.37255 0.51373 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/fl_wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fl_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.070083 0.084087 -0.06589"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="fl_wheel" />
+    <axis
+      xyz="0.01312 0.99991 0" />
+  </joint>
+  <link
+    name="fr_wheel">
+    <inertial>
+      <origin
+        xyz="0.00074042 0.001388 -0.00018443"
+        rpy="0 0 0" />
+      <mass
+        value="0.056644" />
+      <inertia
+        ixx="0.0000155"
+        ixy="0.0000000"
+        ixz="0.0000000"
+        iyy="0.0000194"
+        iyz="0.0000000"
+        izz="0.0000155" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/fr_wheel.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.37255 0.51373 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/fr_wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="fr_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="0.067875 -0.084187 -0.06589"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="fr_wheel" />
+    <axis
+      xyz="0.01312 0.99991 0" />
+  </joint>
+  <link
+    name="rl_wheel">
+    <inertial>
+      <origin
+        xyz="-2.3965E-05 -0.0014211 -4.1315E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.056644" />
+     <inertia
+        ixx="0.0000155"
+        ixy="0.0000000"
+        ixz="0.0000000"
+        iyy="0.0000194"
+        iyz="0.0000000"
+        izz="0.0000155" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/rl_wheel.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/rl_wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="rl_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="-0.068925 0.085911 -0.066328"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="rl_wheel" />
+    <axis
+      xyz="0.01312 0.99991 0" />
+  </joint>
+  <link
+    name="rr_wheel">
+    <inertial>
+      <origin
+        xyz="0.00030618 0.001476 -0.00098591"
+        rpy="0 0 0" />
+      <mass
+        value="0.056644" />
+      <inertia
+        ixx="0.0000155"
+        ixy="0.0000000"
+        ixz="0.0000000"
+        iyy="0.0000194"
+        iyz="0.0000000"
+        izz="0.0000155" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/rr_wheel.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25098 0.25098 0.25098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/rr_wheel.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="rr_wheel_joint"
+    type="continuous">
+    <origin
+      xyz="-0.071133 -0.082363 -0.066328"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="rr_wheel" />
+    <axis
+      xyz="0.01312 0.99991 0" />
+  </joint>
+  <link
+    name="left_jaw">
+    <inertial>
+      <origin
+        xyz="0.01061 -0.019312 0.00031805"
+        rpy="0 0 0" />
+      <mass
+        value="0.026038" />
+      <inertia
+        ixx="2.1347E-05"
+        ixy="-5.307E-08"
+        ixz="9.8062E-08"
+        iyy="4.9459E-06"
+        iyz="3.6333E-09"
+        izz="2.2742E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/left_jaw.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.039216 0.4902 0.7098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/left_jaw.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_jaw_joint"
+    type="prismatic">
+    <origin
+      xyz="0.16546 0.094607 -0.070662"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="left_jaw" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="0"
+      upper="0.1"
+      effort="20"
+      velocity="15" />
+  </joint>
+  <link
+    name="right_jaw">
+    <inertial>
+      <origin
+        xyz="0.01061 -0.019312 0.00031805"
+        rpy="0 0 0" />
+      <mass
+        value="0.026038" />
+      <inertia
+        ixx="2.1347E-05"
+        ixy="-5.307E-08"
+        ixz="9.8062E-08"
+        iyy="4.9459E-06"
+        iyz="3.6333E-09"
+        izz="2.2742E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/right_jaw.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://carbot/meshes/right_jaw.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_jaw_joint"
+    type="prismatic">
+    <origin
+      xyz="0.17081 -0.064493 -0.070755"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="right_jaw" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      lower="-0.1"
+      upper="0"
+      effort="20"
+      velocity="15" />
+  </joint>
+</robot>

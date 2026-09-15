@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="test">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.019464 0.0042384 0.068983"
+        rpy="0 0 0" />
+      <mass
+        value="0.10421" />
+      <inertia
+        ixx="0.00023232"
+        ixy="5.302E-08"
+        ixz="8.4271E-07"
+        iyy="0.0004338"
+        iyz="4.2351E-08"
+        izz="0.000271" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file:///workspaces/mam_eurobot_2026/models/simple_robot/test/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.29804 0.29804 0.29804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file:///workspaces/mam_eurobot_2026/models/simple_robot/test/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="servo">
+    <inertial>
+      <origin
+        xyz="-0.00038668 0.002027 -1.7729E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0091585" />
+      <inertia
+        ixx="1.7624E-07"
+        ixy="1.2666E-08"
+        ixz="-9.6851E-12"
+        iyy="5.2762E-07"
+        iyz="-4.4599E-12"
+        izz="4.8486E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file:///workspaces/mam_eurobot_2026/models/simple_robot/test/meshes/servo.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file:///workspaces/mam_eurobot_2026/models/simple_robot/test/meshes/servo.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="first"
+    type="fixed">
+    <origin
+      xyz="0.045586 0.00765 0.013706"
+      rpy="0 -1.5708 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="servo" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

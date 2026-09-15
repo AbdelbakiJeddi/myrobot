@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <model name="Crate">
+    <static>false</static>
+    <link name="link">
+      <inertial>
+        <mass>0.17</mass>
+        <inertia>
+          <ixx>0.000048167</ixx>
+          <iyy>0.000331500</iyy>
+          <izz>0.000354167</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.15 0.05 0.03</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>1.0</mu2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <kp>1e6</kp>
+              <kd>1</kd>
+              <max_vel>0.1</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+          <bounce>
+            <restitution_coefficient>0.0</restitution_coefficient>
+            <threshold>1e6</threshold>
+          </bounce>
+        </surface>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.15 0.05 0.03</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.0 0.3 0.8 1</ambient>
+          <diffuse>0.0 0.3 0.8 1</diffuse>
+          <specular>0.2 0.2 0.2 1</specular>
+        </material>
+      </visual>
+      <visual name="aruco_top">
+        <pose>0 0 0.0155 0 0 0</pose>
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <plane>
+            <size>0.04 0.04</size>
+            <normal>0 0 1</normal>
+            <texture>
+              <size>0.03 0.03</size>
+            </texture>
+          </plane>
+        </geometry>
+        <material>
+          <diffuse>1 1 1 1</diffuse>
+          <pbr>
+            <metal>
+              <albedo_map>file://models/crate/aruco_36.png</albedo_map>
+            </metal>
+          </pbr>
+          <double_sided>true</double_sided>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

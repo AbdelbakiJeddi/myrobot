@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <!-- Balise fixe Eurobot (max 100 x 100 x 1000 mm) - Équipe BLEUE -->
+  <model name="beaconB">
+    <static>true</static>
+
+    <link name="beacon_link">
+      <!-- Corps principal -->
+      <collision name="collision">
+        <geometry>
+          <box>
+            <!-- 100 x 100 x 1000 mm -->
+            <size>0.10 0.10 1.00</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.10 0.10 1.00</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.00 0.36 0.55 1</diffuse>   <!-- Bleu (RAL 5017) -->
+          <ambient>0.00 0.36 0.55 1</ambient>
+          <specular>0.2 0.2 0.2 1</specular>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
