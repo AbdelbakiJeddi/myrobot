@@ -22,9 +22,9 @@ def generate_launch_description():
         name='imu_filter_madgwick_node',
         output='screen',
         parameters=[{
-            'use_mag': False,            # set True if you have a magnetometer
-            'publish_tf': False,         # set True if you want it to publish a TF
-            'world_frame': 'enu',        # 'enu', 'ned', or 'nwu'
+            'use_mag': False,           
+            'publish_tf': False,        
+            'world_frame': 'enu',       
             'fixed_frame': 'odom',
             'gain': 0.01,
             'zeta': 0.0,
