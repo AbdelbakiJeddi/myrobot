@@ -13,7 +13,13 @@ The IMU, EKF, and LiDAR are disabled for this setup.
 
 ## 1. Prepare the workspace
 
-Open a terminal in the ROS 2 workspace and source ROS 2:
+Open a terminal in the ROS 2 workspace and remove the previous build, install, and log directories:
+
+```bash
+rm -rf build install log
+```
+
+Then source ROS 2:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
