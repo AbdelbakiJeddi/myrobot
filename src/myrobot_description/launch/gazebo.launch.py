@@ -73,12 +73,13 @@ def generate_launch_description():
         executable="parameter_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
-            "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan"
+            # IMU and LiDAR are intentionally disabled; the simulation uses
+            # ros2_control odometry and the RGB camera only.
+            # "/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
+            # "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
+            "/camera/image_raw@sensor_msgs/msg/Image@gz.msgs.Image",
+            "/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo",
         ],
-        remappings=[
-            ('/imu', '/imu/out'),
-        ]
     )
 
     waypoint_marker  = Node(

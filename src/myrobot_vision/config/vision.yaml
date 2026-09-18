@@ -1,0 +1,5 @@
+vision_node:
+  ros__parameters:
+    image_topic: /camera/image_raw
+    queue_depth: 5
+    log_every_n_frames: 30

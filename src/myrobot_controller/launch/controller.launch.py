@@ -12,15 +12,20 @@ def generate_launch_description():
             "joint_state_broadcaster",
             "--controller-manager",
             "/controller_manager",
+            "--controller-manager-timeout",
+            "60",
         ],
     )
 
     wheel_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["myrobot_controller", 
-                   "--controller-manager", 
-                   "/controller_manager"
+        arguments=[
+            "myrobot_controller",
+            "--controller-manager",
+            "/controller_manager",
+            "--controller-manager-timeout",
+            "60",
         ],
     )
 
